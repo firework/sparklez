@@ -19,6 +19,10 @@ module.exports = Vue.extend({
 		},
 
 		removeTab: function(index) {
+			if (this.tabs[index] == this.tabActive) {
+				this.tabActive = null;
+			}
+
 			this.tabs.splice(index, 1);
 		},
 

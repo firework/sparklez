@@ -1,0 +1,31 @@
+<div class="window-content">
+  <div class="pane-group">
+    <div class="pane pane-sm sidebar">
+      <nav class="nav-group">
+        <h5 class="nav-group-title">Tables</h5>
+        <span class="nav-group-item"
+              v-for="table in tables"
+              :class="isTableActive(table) ? 'active' : ''"
+              @click="setTableActive(table)"
+        >
+          {{table}}
+        </span>
+      </nav>
+    </div>
+
+    <div class="pane">
+        <table class="table-striped">
+          <thead>
+            <tr>
+              <th v-for="column in columns">{{column}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows">
+              <td v-for="column in columns">{{row[column]}}</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
