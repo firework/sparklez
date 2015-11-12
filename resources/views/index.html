@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sparklez</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/app.css">
+  </head>
+  <body>
+    <div class="window">
+      <!-- .toolbar-header sits at the top of your app -->
+      <header class="toolbar toolbar-header">
+        <h1 class="title">Sparklez</h1>
+        <div class="toolbar-actions">
+
+          <div class="btn-group">
+            <button class="btn btn-default">
+              <span class="icon icon-home"></span>
+            </button>
+            <button class="btn btn-default">
+              <span class="icon icon-folder"></span>
+            </button>
+            <button class="btn btn-default active">
+              <span class="icon icon-cloud"></span>
+            </button>
+            <button class="btn btn-default">
+              <span class="icon icon-popup"></span>
+            </button>
+            <button class="btn btn-default">
+              <span class="icon icon-shuffle"></span>
+            </button>
+          </div>
+
+          <button class="btn btn-default">
+            <span class="icon icon-home icon-text"></span>
+            Filters
+          </button>
+
+          <button class="btn btn-default btn-dropdown pull-right js-popover-trigger">
+            <span class="icon icon-megaphone"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Your app's content goes inside .window-content -->
+      <div class="window-content" id="app">
+        <div class="pane-group">
+          <div class="pane pane-sm sidebar">
+            <nav class="nav-group">
+              <h5 class="nav-group-title">Tables</h5>
+              <span class="nav-group-item"
+                    v-for="table in tables"
+                    :class="isTableActive(table) ? 'active' : ''"
+                    @click=(setTableActive(table))
+              >
+                {{table}}
+              </span>
+            </nav>
+          </div>
+
+          <div class="pane">
+              <table class="table-striped">
+                <thead>
+                  <tr>
+                    <th v-for="column in columns">{{column}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in rows">
+                    <td v-for="column in columns">{{row[column]}}</td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/app.js" charset="utf-8"></script>
+  </body>
+</html>
