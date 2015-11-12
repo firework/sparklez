@@ -1,5 +1,5 @@
 var fs = require('fs'),
-	Vue = require('Vue'),
+	Vue = require('vue'),
 	Sequelize = require('sequelize'),
 	SequelizeAuto = require('sequelize-auto'),
 	sequelize = new Sequelize('mysql://homestead:secret@localhost:33060/homestead'),
@@ -8,8 +8,6 @@ var fs = require('fs'),
 		port: 33060,
 	}),
 	sequelizeDir = __dirname + '/../sequelize';
-
-console.log(__dirname);
 
 var app = new Vue({
 	el: '#app',
