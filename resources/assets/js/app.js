@@ -9,18 +9,43 @@ var fs = require('fs'),
 	}),
 	sequelizeDir = __dirname + '/../sequelize';
 
+Vue.config.debug = true;
+
 var app = new Vue({
 	el: '#app',
 
 	data: {
+		tabs: [],
+		tabsCount: 0,
+		tabActive: null,
 		tables: [],
 		tableActive: null,
 		model: null,
 		columns: [],
-		rows: []
+		rows: [],
 	},
 
 	methods: {
+		addTab: function(tab) {
+			var newTab = 'Tab ' + (++this.tabsCount);
+
+			this.tabs.push(newTab);
+
+			this.setTabActive(newTab);
+		},
+
+		removeTab: function(index) {
+			this.tabs.splice(index, 1);
+		},
+
+		isTabActive: function(tab) {
+			return tab == this.tabActive;
+		},
+
+		setTabActive: function(tab) {
+			this.tabActive = tab;
+		},
+
 		isTableActive: function(table) {
 			return table == this.tableActive;
 		},
@@ -43,12 +68,14 @@ var app = new Vue({
 				that.tableActive = table;
 				that.columns = columns;
 				that.rows = rows;
-			})
-		}
+			});
+		},
 	},
 
 	created: function() {
 		var that = this;
+
+		this.addTab();
 
 		sequelizeAuto.run({
 			spaces: true,

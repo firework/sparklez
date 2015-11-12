@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../css/app.css">
   </head>
   <body>
-    <div class="window">
+    <div class="window" id="app">
       <!-- .toolbar-header sits at the top of your app -->
       <header class="toolbar toolbar-header">
         <h1 class="title">Sparklez</h1>
@@ -42,8 +42,25 @@
         </div>
       </header>
 
+    <div class="tab-group">
+        <div class="tab-item active"
+             v-for="tab in tabs"
+             :class="isTabActive(tab) ? 'active' : ''"
+             @click="setTabActive(tab)"
+        >
+            <span class="icon icon-cancel icon-close-tab"
+                  @click="removeTab($index)"
+            ></span> {{tab}}
+        </div>
+        <div class="tab-item tab-item-fixed"
+             @click="addTab()"
+        >
+            <span class="icon icon-plus"></span>
+        </div>
+    </div>
+
       <!-- Your app's content goes inside .window-content -->
-      <div class="window-content" id="app">
+      <div class="window-content">
         <div class="pane-group">
           <div class="pane pane-sm sidebar">
             <nav class="nav-group">
@@ -51,7 +68,7 @@
               <span class="nav-group-item"
                     v-for="table in tables"
                     :class="isTableActive(table) ? 'active' : ''"
-                    @click=(setTableActive(table))
+                    @click="setTableActive(table)"
               >
                 {{table}}
               </span>
