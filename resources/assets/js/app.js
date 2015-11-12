@@ -20,24 +20,7 @@ var app = new Vue({
 	el: '#app',
 
 	components: {
-		'connection': require(jsDir + '/connection'),
-		'database': require(jsDir + '/database'),
 		'tabs': require(jsDir + '/tabs'),
+		'tab': require(jsDir + '/tab'),
 	},
-
-	data: {
-		connection: {
-			active: false,
-		},
-	},
-
-	methods: {
-		connect: function() {
-			this.connection.active = !this.connection.active;
-		},
-	},
-
-	created: function() {
-
-	},
-})
+});

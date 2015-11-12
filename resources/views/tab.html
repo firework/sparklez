@@ -1,0 +1,8 @@
+<connection
+    v-if="!connection.active"
+    :connection.sync="connection"
+></connection>
+
+<database
+    v-if="connection.active"
+></database>
