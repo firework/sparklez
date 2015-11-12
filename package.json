@@ -24,6 +24,7 @@
     "vue": "^1.0.7"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.34.3"
+    "electron-prebuilt": "^0.34.3",
+    "laravel-elixir-livereload": "^1.1.3"
   }
 }
