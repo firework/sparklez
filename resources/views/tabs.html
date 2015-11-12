@@ -1,0 +1,16 @@
+<div class="tab-group">
+	<div class="tab-item active"
+		 v-for="tab in tabs"
+		 :class="isTabActive(tab) ? 'active' : ''"
+		 @click="setTabActive(tab)"
+	>
+		<span class="icon icon-cancel icon-close-tab"
+			  @click="removeTab($index)"
+		></span> {{tab}}
+	</div>
+	<div class="tab-item tab-item-fixed"
+		 @click="addTab()"
+	>
+		<span class="icon icon-plus"></span>
+	</div>
+</div>
