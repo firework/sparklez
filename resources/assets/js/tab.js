@@ -6,6 +6,8 @@ module.exports = Vue.extend({
 		'database': require(jsDir + '/database'),
 	},
 
+	props: ['tab', 'name', 'active'],
+
 	data: function() {
 		return {
 			connection: {
@@ -16,9 +18,21 @@ module.exports = Vue.extend({
 
 	methods: {
 		connect: function() {
-			this.connection.active = !this.connection.active;
+			this.connection.active = true;
+		},
+
+		disconnect: function() {
+			this.connection.active = false;
+		},
+
+		isConnected: function() {
+			if (this.active) this.tab = this;
+
+			return this.active && this.connection.active;
+		},
+
+		isNotConnected: function() {
+			return this.active && !this.connection.active;
 		},
 	},
-
-
 });

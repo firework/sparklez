@@ -1,8 +1,8 @@
 <connection
-    v-if="!connection.active"
+    v-if="isNotConnected(tab)"
     :connection.sync="connection"
 ></connection>
 
 <database
-    v-if="connection.active"
+    v-if="isConnected(tab)"
 ></database>

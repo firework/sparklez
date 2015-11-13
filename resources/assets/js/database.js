@@ -1,3 +1,8 @@
+var Sequelize = require('sequelize'),
+	SequelizeAuto = require('sequelize-auto'),
+	sequelize = null,
+	sequelizeAuto = null;
+
 module.exports = Vue.extend({
 	template: view('database'),
 
@@ -40,6 +45,19 @@ module.exports = Vue.extend({
 
 	created: function() {
 		var that = this;
+
+		// Uncomment this if you don't want to connect to the database
+		// this.tables = ['table_1', 'table_2'];
+		// this.columns = ['col_1', 'col_2'];
+		// this.rows = [{col_1: 1, col_2: 'row 1'}, {col_1: 2, col_2: 'row 2'}];
+		//
+		// return;
+
+		sequelize = new Sequelize('mysql://homestead:secret@localhost:33060/homestead'),
+		sequelizeAuto = new SequelizeAuto('homestead', 'homestead', 'secret', {
+			host: 'localhost',
+			port: 33060,
+		});
 
 		sequelizeAuto.run({
 			spaces: true,
