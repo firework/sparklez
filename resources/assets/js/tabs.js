@@ -1,48 +1,48 @@
 module.exports = Vue.extend({
-	template: view('tabs'),
+    template: view('tabs'),
 
-	components: {
-		'tab': require(jsDir + '/tab'),
-	},
+    components: {
+        'tab': require(jsDir + '/tab'),
+    },
 
-	props: ['tab'],
+    props: ['tab'],
 
-	data: function() {
-		return {
-			items: [],
-			count: 0,
-			active: null,
-		}
-	},
+    data: function() {
+        return {
+            items: [],
+            count: 0,
+            active: null,
+        }
+    },
 
-	methods: {
-		add: function() {
-			var newTab = 'Tab ' + (++this.count),
-				index = this.items.push(newTab);
+    methods: {
+        add: function() {
+            var newTab = 'Tab ' + (++this.count),
+                index = this.items.push(newTab);
 
-			this.setActive(index - 1);
-		},
+            this.setActive(index - 1);
+        },
 
-		remove: function(index) {
-			if (index == this.active) {
-				this.active = null;
-			} else {
-				this.active > index ? this.active-- : null;
-			}
+        remove: function(index) {
+            if (index == this.active) {
+                this.active = null;
+            } else {
+                this.active > index ? this.active-- : null;
+            }
 
-			this.items.$remove(this.items[index]);
-		},
+            this.items.$remove(this.items[index]);
+        },
 
-		isActive: function(index) {
-			return index == this.active;
-		},
+        isActive: function(index) {
+            return index == this.active;
+        },
 
-		setActive: function(index) {
-			this.active = index;
-		},
-	},
+        setActive: function(index) {
+            this.active = index;
+        },
+    },
 
-	created: function() {
-		this.add();
-	},
+    created: function() {
+        this.add();
+    },
 });

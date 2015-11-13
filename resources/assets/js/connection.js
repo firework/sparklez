@@ -1,11 +1,11 @@
 module.exports = Vue.extend({
-	template: view('connection'),
+    template: view('connection'),
 
-	props: ['connection'],
+    props: ['connection'],
 
-	methods: {
-		connect: function() {
-			this.connection.active = !this.connection.active;
-		},
-	},
+    methods: {
+        connect: function() {
+            this.connection.active = !this.connection.active;
+        },
+    },
 });

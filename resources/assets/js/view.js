@@ -1,3 +1,3 @@
 module.exports = function(file) {
-	return fs.readFileSync(viewDir + '/' + file + '.html', 'utf8');
+    return fs.readFileSync(viewDir + '/' + file + '.html', 'utf8');
 }
