@@ -1,45 +1,46 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Sparklez</title>
+    <head>
+        <title>Sparklez</title>
 
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/app.css">
-  </head>
-  <body>
-    <div class="window" id="app">
-      <!-- .toolbar-header sits at the top of your app -->
-      <header class="toolbar toolbar-header">
-        <h1 class="title">{{title}}</h1>
-        <div class="toolbar-actions">
-          <button class="btn btn-default"
-                  v-if="isConnected()"
-                  @click="disconnect()"
-          >
-            <span class="icon icon-flash icon-text"></span>
-            Disconnect
-          </button>
-          <button class="btn btn-default"
-                  v-if="!isConnected()"
-                  @click="connect()"
-          >
-            <span class="icon icon-flash icon-text"></span>
-            Connect
-          </button>
-          <button class="btn btn-default"
-                  v-if="!tab"
-          >
-            <span class="icon icon-flash icon-text"></span>
-            No Connection
-          </button>
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="../css/app.css">
+    </head>
+    <body>
+        <div class="window" id="app">
+            <header class="toolbar toolbar-header">
+                <h1 class="title">{{title}}</h1>
+                <div class="toolbar-actions">
+                    <button class="btn btn-default"
+                        v-if="isConnected()"
+                        @click="disconnect()"
+                    >
+                        <span class="icon icon-flash icon-text"></span>
+                        Disconnect
+                    </button>
+
+                    <button class="btn btn-default"
+                        v-if="!isConnected()"
+                        @click="connect()"
+                    >
+                        <span class="icon icon-flash icon-text"></span>
+                        Connect
+                    </button>
+
+                    <button class="btn btn-default"
+                        v-if="!tab"
+                    >
+                        <span class="icon icon-flash icon-text"></span>
+                        No Connection
+                    </button>
+                </div>
+            </header>
+
+            <tabs
+                :tab.sync="tab"
+            ></tabs>
         </div>
-      </header>
-
-      <tabs
-          :tab.sync="tab"
-      ></tabs>
-    </div>
-    <script src="../js/app.js" charset="utf-8"></script>
-    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
-  </body>
+        <script src="../js/app.js" charset="utf-8"></script>
+        <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+    </body>
 </html>
