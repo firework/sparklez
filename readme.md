@@ -1,0 +1,3 @@
+# Sparklez
+
+Database management tool
