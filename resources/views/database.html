@@ -4,7 +4,7 @@
             <nav class="nav-group">
                 <h5 class="nav-group-title">Tables</h5>
                 <span class="nav-group-item"
-                    v-for="table in tables"
+                    v-for="table in connection.tables"
                     :class="isTableActive(table) ? 'active' : ''"
                     @click="setTableActive(table)"
                 >
@@ -17,13 +17,13 @@
             <table class="table-striped">
                 <thead>
                     <tr>
-                        <th v-for="column in columns">{{column}}</th>
+                        <th v-for="column in connection.columns">{{column}}</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <tr v-for="row in rows">
-                        <td v-for="column in columns">{{row[column]}}</td>
+                    <tr v-for="row in connection.rows">
+                        <td v-for="column in connection.columns">{{row[column]}}</td>
                     </tr>
                 </tbody>
             </table>

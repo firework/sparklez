@@ -12,13 +12,25 @@ module.exports = Vue.extend({
         return {
             connection: {
                 active: false,
+                loaded: false,
+                server: null,
+                port: null,
+                username: null,
+                password: null,
+                database: null,
+                sequelize: null,
+                tableActive: null,
+                model: null,
+                tables: [],
+                columns: [],
+                rows: [],
             },
         };
     },
 
     methods: {
         connect: function() {
-            this.connection.active = true;
+            this.$children[0].connect();
         },
 
         disconnect: function() {
