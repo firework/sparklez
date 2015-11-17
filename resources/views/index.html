@@ -8,30 +8,22 @@
     </head>
     <body>
         <div class="window" id="app">
-            <header class="toolbar toolbar-header">
+            <header class="toolbar toolbar-header text-right">
                 <h1 class="title">{{title}}</h1>
                 <div class="toolbar-actions">
-                    <button class="btn btn-default"
-                        v-if="isConnected()"
-                        @click="disconnect()"
-                    >
-                        <span class="icon icon-flash icon-text"></span>
-                        Disconnect
+                    <button class="btn btn-default">
+                        <span class="icon icon-menu icon-text"></span>
+                        Content
                     </button>
 
-                    <button class="btn btn-default"
-                        v-if="!isConnected()"
-                        @click="connect()"
-                    >
-                        <span class="icon icon-flash icon-text"></span>
-                        Connect
+                    <button class="btn btn-default">
+                        <span class="icon icon-flow-tree icon-text"></span>
+                        Structure
                     </button>
 
-                    <button class="btn btn-default"
-                        v-if="!tab"
-                    >
-                        <span class="icon icon-flash icon-text"></span>
-                        No Connection
+                    <button class="btn btn-default">
+                        <span class="icon icon-publish icon-text"></span>
+                        Query
                     </button>
                 </div>
             </header>
