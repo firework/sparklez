@@ -29,12 +29,10 @@ module.exports = Vue.extend({
     },
 
     methods: {
-        connect: function() {
-            this.$children[0].connect();
-        },
-
         disconnect: function() {
-            this.connection.active = false;
+            if (this.connection.active) {
+                this.connection.active = false;
+            }
         },
 
         isConnected: function() {

@@ -23,12 +23,14 @@ module.exports = Vue.extend({
             this.setActive(index - 1);
         },
 
-        remove: function(index) {
+        removeAndDisconnect: function(index) {
             if (index == this.active) {
                 this.active = null;
             } else {
                 this.active > index ? this.active-- : null;
             }
+
+            this.tab.disconnect();
 
             this.items.$remove(this.items[index]);
         },

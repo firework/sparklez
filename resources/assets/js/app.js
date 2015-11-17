@@ -23,18 +23,6 @@ var app = new Vue({
     },
 
     methods: {
-        connect: function() {
-            if (!this.tab) return;
-
-            this.tab.connect();
-        },
-
-        disconnect: function() {
-            if (!this.tab) return;
-
-            this.tab.disconnect();
-        },
-
         isConnected: function() {
             return this.tab && this.tab.connection.active;
         }
