@@ -17,7 +17,7 @@ var app = new Vue({
 
     data: function() {
         return {
-            title: 'Servers List',
+            loading: false,
             tab: null,
         };
     },

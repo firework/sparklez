@@ -16,6 +16,8 @@ module.exports = Vue.extend({
             var that = this,
                 columns = Object.keys(this.connection.model.attributes);
 
+            that.$root.loading = true;
+
             that.connection.model.findAll({
                 attributes: columns,
             }).then(function(result) {
@@ -28,6 +30,8 @@ module.exports = Vue.extend({
                 that.connection.tableActive = table;
                 that.connection.columns = columns;
                 that.connection.rows = rows;
+            }).done(function(e) {
+                that.$root.loading = false;
             });
         },
     },
@@ -45,6 +49,8 @@ module.exports = Vue.extend({
             that.connection.tables = files;
             that.setTableActive(files[0]);
             that.connection.loaded = true;
+
+            that.$root.loading = false;
         });
     },
 });
