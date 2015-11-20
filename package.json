@@ -21,7 +21,7 @@
     "sqlite3": "^3.1.1",
     "tedious": "^1.13.1",
     "tunnel-ssh": "^2.0.0",
-    "vue": "^1.0.7"
+    "vue": "^1.0.8"
   },
   "devDependencies": {
     "electron-prebuilt": "^0.34.3",

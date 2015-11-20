@@ -10,6 +10,8 @@ module.exports = Vue.extend({
         connect: function() {
             var that = this;
 
+            that.$root.loading = true;
+
             that.connection.sequelize = new Sequelize(that.connection.database, that.connection.username, that.connection.password, {
                 host: that.connection.server,
                 port: that.connection.port

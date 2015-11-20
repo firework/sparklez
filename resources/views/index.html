@@ -8,8 +8,8 @@
     </head>
     <body>
         <div class="window" id="app">
+            <div :class="{'loading':loading}"></div>
             <header class="toolbar toolbar-header text-right">
-                <h1 class="title">{{title}}</h1>
                 <div class="toolbar-actions">
                     <button class="btn btn-default">
                         <span class="icon icon-menu icon-text"></span>
