@@ -4,31 +4,24 @@ module.exports = Vue.extend({
     components: {
         'connection': require(jsDir + '/connection'),
         'database': require(jsDir + '/database'),
+        'loading': require(jsDir + '/components/loading'),
     },
 
     props: ['tab', 'name', 'active'],
 
     data: function() {
         return {
-            connection: {
-                active: false,
-                loaded: false,
-                server: null,
-                port: null,
-                username: null,
-                password: null,
-                database: null,
-                sequelize: null,
-                tableActive: null,
-                model: null,
-                tables: [],
-                columns: [],
-                rows: [],
-            },
+            connection: null,
+            database: null,
+            loading: null,
         };
     },
 
     methods: {
+        isActive: function() {
+            return this.active;
+        },
+
         disconnect: function() {
             if (this.connection.active) {
                 this.connection.active = false;

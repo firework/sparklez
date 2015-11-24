@@ -1,9 +1,13 @@
-<connection
-    v-if="isNotConnected(tab)"
-    :connection.sync="connection"
-></connection>
+<div class="window-content"
+    v-show="isActive()"
+>
+    <loading></loading>
 
-<database
-    v-if="isConnected(tab)"
-    :connection.sync="connection"
-></database>
+    <connection
+        v-show="isNotConnected(tab)"
+    ></connection>
+
+    <database
+        v-show="isConnected(tab)"
+    ></database>
+</div>

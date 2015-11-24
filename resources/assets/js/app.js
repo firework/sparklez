@@ -20,7 +20,6 @@ var app = new Vue({
 
     data: function() {
         return {
-            loading: false,
             tab: null,
         };
     },
