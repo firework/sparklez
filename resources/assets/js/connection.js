@@ -4,23 +4,40 @@ var Sequelize = require('sequelize'),
 module.exports = Vue.extend({
     template: view('connection'),
 
-    props: ['connection'],
+    data: function() {
+        return {
+            active: false,
+            loaded: false,
+            server: null,
+            port: null,
+            username: null,
+            password: null,
+            database: null,
+            sequelize: null,
+        };
+    },
+
+    computed: {
+        loading: function() {
+            return this.$parent.loading;
+        },
+    },
 
     methods: {
         connect: function() {
             var that = this;
 
-            that.$root.loading = true;
+            that.loading.start();
 
-            that.connection.sequelize = new Sequelize(that.connection.database, that.connection.username, that.connection.password, {
-                host: that.connection.server,
-                port: that.connection.port
+            that.sequelize = new Sequelize(that.database, that.username, that.password, {
+                host: that.server,
+                port: that.port
             });
 
-            that.connection.sequelize.authenticate().then(function(errors) {
-                var sequelizeAuto = new SequelizeAuto(that.connection.database, that.connection.username, that.connection.password, {
-                    host: that.connection.server,
-                    port: that.connection.port
+            that.sequelize.authenticate().then(function(errors) {
+                var sequelizeAuto = new SequelizeAuto(that.database, that.username, that.password, {
+                    host: that.server,
+                    port: that.port
                 });
 
                 sequelizeAuto.run({
@@ -33,14 +50,22 @@ module.exports = Vue.extend({
                 }, function(err){
                     if (err) {
                         alert('Something went wrong, please try again.');
+                        that.loading.stop();
                     }
 
-                    that.connection.active = true;
-                    that.connection.loaded = false;
+                    that.active = true;
+                    that.loaded = false;
+
+                    that.$parent.database.create();
                 });
             }).catch(function(errors) {
                 alert('Wrong credentials, please try again.');
+                that.loading.stop();
             });
         },
+    },
+
+    created: function() {
+        this.$parent.connection = this;
     },
 });
