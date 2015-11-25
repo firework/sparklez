@@ -22,6 +22,17 @@ module.exports = Vue.extend({
         },
     },
 
+    filters: {
+        limit: function(value, qty) {
+            value = String(value);
+            qty = qty || 50;
+
+            if (value.length < qty) return value;
+
+            return value.substr(0, qty) +  ' ...';
+        }
+    },
+
     methods: {
         isTableActive: function(table) {
             return table == this.tableActive;
