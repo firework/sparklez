@@ -10,21 +10,22 @@
   "author": "Daniel Polito <contato@dbpolito.net> (http://dbpolito.net)",
   "license": "MIT",
   "dependencies": {
-    "gulp": "^3.9.0",
-    "laravel-elixir": "^3.4.2",
+    "laravel-elixir": "^3.4.3",
     "mysql": "^2.9.0",
     "pg": "^4.4.3",
     "pg-hstore": "^2.3.2",
     "photon": "git://github.com/connors/photon.git#master",
-    "sequelize": "^3.13.0",
-    "sequelize-auto": "^0.2.2",
+    "sequelize": "^3.14.1",
+    "sequelize-auto": "^0.2.3",
     "sqlite3": "^3.1.1",
     "tedious": "^1.13.1",
-    "tunnel-ssh": "^2.0.0",
-    "vue": "^1.0.8"
+    "tunnel-ssh": "^2.0.1",
+    "vue": "^1.0.10",
+    "vue-devtools": "git://github.com/vuejs/vue-devtools.git#master"
   },
   "devDependencies": {
     "electron-prebuilt": "^0.35.1",
+    "gulp": "^3.9.0",
     "laravel-elixir-livereload": "^1.1.3",
     "vue-devtools": "git://github.com/vuejs/vue-devtools#master"
   }
