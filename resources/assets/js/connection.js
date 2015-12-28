@@ -6,6 +6,25 @@ module.exports = Vue.extend({
 
     data: function() {
         return {
+            favorites: [
+                {
+                    name: 'New Connection',
+                    server: null,
+                    port: null,
+                    username: null,
+                    password: null,
+                    database: null,
+                },
+                {
+                    name: 'Homestead',
+                    server: 'localhost',
+                    port: '33060',
+                    username: 'homestead',
+                    password: 'secret',
+                    database: 'homestead',
+                },
+            ],
+            favorite: 0,
             active: false,
             loaded: false,
             server: null,
@@ -20,6 +39,20 @@ module.exports = Vue.extend({
     methods: {
         loading: function() {
             return this.$parent.loading();
+        },
+
+        isFavoriteActive: function(index) {
+            return this.favorite === index;
+        },
+
+        setFavoriteActive: function(index) {
+            this.favorite = index;
+
+            for (x in this.favorites[index]) {
+                if (x == 'name') continue;
+
+                this[x] = this.favorites[index][x];
+            }
         },
 
         connect: function() {

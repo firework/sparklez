@@ -1,4 +1,14 @@
 <div class="pane-group">
+    <div class="pane pane-sm sidebar">
+        <nav class="nav-group">
+            <h5 class="nav-group-title">Favorites</h5>
+            <span class="nav-group-item"
+                v-for="favorite in favorites"
+                :class="isFavoriteActive($index) ? 'active' : ''"
+                @click="setFavoriteActive($index)"
+            >{{ favorite.name }}</span>
+        </nav>
+    </div>
     <div class="pane sidebar">
         <div class="padded-more">
             <form>
