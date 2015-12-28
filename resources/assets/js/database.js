@@ -40,12 +40,12 @@ module.exports = Vue.extend({
         setTableActive: function(table) {
             this.model = require(sequelizeDir + '/' + table)(this.connection().sequelize, Sequelize);
 
-            var that = this,
-                columns = Object.keys(this.model.attributes);
+            var columns = Object.keys(this.model.attributes);
 
-            that.loading().start();
+            this.loading().start();
 
-            that.model.findAll({
+
+            this.model.findAll({
                 attributes: columns,
             }).then(function(result) {
                 var rows = [];
@@ -54,30 +54,27 @@ module.exports = Vue.extend({
                     rows.push(result[x].dataValues);
                 }
 
-                that.tableActive = table;
-                that.columns = columns;
-                that.rows = rows;
-            }).done(function(e) {
-                that.loading().stop();
-            });
+                this.tableActive = table;
+                this.columns = columns;
+                this.rows = rows;
+            }.bind(this)).done(function(e) {
+                this.loading().stop();
+            }.bind(this));
         },
 
         create: function() {
-            var that = this;
-
-            if (that.connection().loaded) return;
+            if (this.connection().loaded) return;
 
             fs.readdir(sequelizeDir, function(err, files) {
                 for (x in files) {
                     files[x] = files[x].replace('.js', '');
                 }
 
-                that.tables = files;
-                that.setTableActive(files[0]);
-                that.connection().loaded = true;
-
-                that.loading().stop();
-            });
+                this.tables = files;
+                this.setTableActive(files[0]);
+                this.connection().loaded = true;
+                this.loading().stop();
+            }.bind(this));
         },
     },
 });

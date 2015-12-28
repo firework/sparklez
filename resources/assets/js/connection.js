@@ -23,19 +23,17 @@ module.exports = Vue.extend({
         },
 
         connect: function() {
-            var that = this;
+            this.loading().start();
 
-            that.loading().start();
-
-            that.sequelize = new Sequelize(that.database, that.username, that.password, {
-                host: that.server,
-                port: that.port
+            this.sequelize = new Sequelize(this.database, this.username, this.password, {
+                host: this.server,
+                port: this.port
             });
 
-            that.sequelize.authenticate().then(function(errors) {
-                var sequelizeAuto = new SequelizeAuto(that.database, that.username, that.password, {
-                    host: that.server,
-                    port: that.port
+            this.sequelize.authenticate().then(function(errors) {
+                var sequelizeAuto = new SequelizeAuto(this.database, this.username, this.password, {
+                    host: this.server,
+                    port: this.port
                 });
 
                 sequelizeAuto.run({
@@ -48,18 +46,18 @@ module.exports = Vue.extend({
                 }, function(err){
                     if (err) {
                         alert('Something went wrong, please try again.');
-                        that.loading().stop();
+                        this.loading().stop();
                     }
 
-                    that.active = true;
-                    that.loaded = false;
+                    this.active = true;
+                    this.loaded = false;
 
-                    that.$parent.database.create();
-                });
-            }).catch(function(errors) {
+                    this.$parent.database().create();
+                }.bind(this));
+            }.bind(this)).catch(function(errors) {
                 alert('Wrong credentials, please try again.');
-                that.loading().stop();
-            });
+                this.loading().stop();
+            }.bind(this));
         },
     },
 });
