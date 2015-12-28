@@ -9,33 +9,37 @@ module.exports = Vue.extend({
 
     props: ['tab', 'name', 'active'],
 
-    data: function() {
-        return {
-            connection: null,
-            database: null,
-            loading: null,
-        };
-    },
-
     methods: {
+        connection: function() {
+            return this.$refs.connection;
+        },
+
+        database: function() {
+            return this.$refs.database;
+        },
+
+        loading: function() {
+            return this.$refs.loading;
+        },
+
         isActive: function() {
             return this.active;
         },
 
         disconnect: function() {
-            if (this.connection.active) {
-                this.connection.active = false;
+            if (this.connection().active) {
+                this.connection().active = false;
             }
         },
 
         isConnected: function() {
             if (this.active) this.tab = this;
 
-            return this.active && this.connection.active;
+            return this.active && this.connection().active;
         },
 
         isNotConnected: function() {
-            return this.active && !this.connection.active;
+            return this.active && !this.connection().active;
         },
     },
 });

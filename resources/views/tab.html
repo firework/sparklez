@@ -1,13 +1,17 @@
 <div class="window-content"
     v-show="isActive()"
 >
-    <loading></loading>
+    <loading
+        v-ref:loading
+    ></loading>
 
     <connection
+        v-ref:connection
         v-show="isNotConnected(tab)"
     ></connection>
 
     <database
+        v-ref:database
         v-show="isConnected(tab)"
     ></database>
 </div>

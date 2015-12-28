@@ -17,17 +17,15 @@ module.exports = Vue.extend({
         };
     },
 
-    computed: {
-        loading: function() {
-            return this.$parent.loading;
-        },
-    },
-
     methods: {
+        loading: function() {
+            return this.$parent.loading();
+        },
+
         connect: function() {
             var that = this;
 
-            that.loading.start();
+            that.loading().start();
 
             that.sequelize = new Sequelize(that.database, that.username, that.password, {
                 host: that.server,
@@ -50,7 +48,7 @@ module.exports = Vue.extend({
                 }, function(err){
                     if (err) {
                         alert('Something went wrong, please try again.');
-                        that.loading.stop();
+                        that.loading().stop();
                     }
 
                     that.active = true;
@@ -60,12 +58,8 @@ module.exports = Vue.extend({
                 });
             }).catch(function(errors) {
                 alert('Wrong credentials, please try again.');
-                that.loading.stop();
+                that.loading().stop();
             });
         },
-    },
-
-    created: function() {
-        this.$parent.connection = this;
     },
 });

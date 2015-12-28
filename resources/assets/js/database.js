@@ -13,15 +13,6 @@ module.exports = Vue.extend({
         };
     },
 
-    computed: {
-        connection: function() {
-            return this.$parent.connection;
-        },
-        loading: function() {
-            return this.$parent.loading;
-        },
-    },
-
     filters: {
         limit: function(value, qty) {
             value = String(value);
@@ -34,17 +25,25 @@ module.exports = Vue.extend({
     },
 
     methods: {
+        connection: function() {
+            return this.$parent.connection();
+        },
+
+        loading: function() {
+            return this.$parent.loading();
+        },
+
         isTableActive: function(table) {
             return table == this.tableActive;
         },
 
         setTableActive: function(table) {
-            this.model = require(sequelizeDir + '/' + table)(this.connection.sequelize, Sequelize);
+            this.model = require(sequelizeDir + '/' + table)(this.connection().sequelize, Sequelize);
 
             var that = this,
                 columns = Object.keys(this.model.attributes);
 
-            that.loading.start();
+            that.loading().start();
 
             that.model.findAll({
                 attributes: columns,
@@ -59,14 +58,14 @@ module.exports = Vue.extend({
                 that.columns = columns;
                 that.rows = rows;
             }).done(function(e) {
-                that.loading.stop();
+                that.loading().stop();
             });
         },
 
         create: function() {
             var that = this;
 
-            if (that.connection.loaded) return;
+            if (that.connection().loaded) return;
 
             fs.readdir(sequelizeDir, function(err, files) {
                 for (x in files) {
@@ -75,14 +74,10 @@ module.exports = Vue.extend({
 
                 that.tables = files;
                 that.setTableActive(files[0]);
-                that.connection.loaded = true;
+                that.connection().loaded = true;
 
-                that.loading.stop();
+                that.loading().stop();
             });
         },
-    },
-
-    created: function() {
-        this.$parent.database = this;
     },
 });
