@@ -5,6 +5,7 @@ module.exports = Vue.extend({
         'connection': require(jsDir + '/connection'),
         'database': require(jsDir + '/database'),
         'loading': require(jsDir + '/components/loading'),
+        'modal': require(jsDir + '/components/modal'),
     },
 
     props: ['tab', 'name', 'active'],
@@ -20,6 +21,10 @@ module.exports = Vue.extend({
 
         loading: function() {
             return this.$refs.loading;
+        },
+
+        modal: function() {
+            return this.$refs.modal;
         },
 
         isActive: function() {

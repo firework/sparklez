@@ -1,0 +1,16 @@
+<td
+    @dblclick="update()"
+>
+    <span
+        v-if="!isUpdating()"
+    >
+        {{ data | limit }}
+        {{ type }}
+    </span>
+
+    <input type="text"
+        v-model="data"
+        v-if="isUpdating()"
+        @blur="updated()"
+    >
+</td>

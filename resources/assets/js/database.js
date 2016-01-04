@@ -3,6 +3,10 @@ var Sequelize = require('sequelize');
 module.exports = Vue.extend({
     template: view('database'),
 
+    components: {
+        'row': require(jsDir + '/row'),
+    },
+
     data: function() {
         return {
             tableActive: null,
@@ -10,6 +14,11 @@ module.exports = Vue.extend({
             tables: [],
             columns: [],
             rows: [],
+            updating: {
+                column: null,
+                row: null,
+                type: null,
+            }
         };
     },
 
@@ -31,6 +40,10 @@ module.exports = Vue.extend({
 
         loading: function() {
             return this.$parent.loading();
+        },
+
+        modal: function() {
+            return this.$parent.modal();
         },
 
         isTableActive: function(table) {

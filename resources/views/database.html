@@ -13,6 +13,10 @@
     </div>
 
     <div class="pane">
+        <pre>
+            {{ updating | json }}
+        </pre>
+
         <table class="table-striped">
             <thead>
                 <tr>
@@ -21,9 +25,12 @@
             </thead>
 
             <tbody>
-                <tr v-for="row in rows">
-                    <td v-for="column in columns">{{ row[column] | limit }}</td>
-                </tr>
+                <tr
+                    is="row"
+                    v-for="row in rows"
+                    :row="row"
+                    :row-index="$index"
+                ></tr>
             </tbody>
         </table>
     </div>
