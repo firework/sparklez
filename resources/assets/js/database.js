@@ -37,6 +37,10 @@ module.exports = Vue.extend({
             return table == this.tableActive;
         },
 
+        getColumnsByRow: function(result) {
+            return Object.keys(result);
+        },
+
         setTableActive: function(table) {
             this.model = require(sequelizeDir + '/' + table)(this.connection().sequelize, Sequelize);
 
@@ -44,14 +48,17 @@ module.exports = Vue.extend({
 
             this.loading().start();
 
-
-            this.model.findAll({
-                attributes: columns,
+            this.model.sequelize.query("SELECT * FROM "+this.model.name+" as "+this.model.name, {
+                type: this.model.sequelize.QueryTypes.SELECT
             }).then(function(result) {
                 var rows = [];
 
+                if (typeof(result[0]) != 'undefined') {
+                    columns = this.getColumnsByRow(result[0]);
+                }
+
                 for (x in result) {
-                    rows.push(result[x].dataValues);
+                    rows.push(result[x]);
                 }
 
                 this.tableActive = table;
