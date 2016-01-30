@@ -1,3 +1,5 @@
+var Sequelize = require('sequelize');
+
 module.exports = Vue.extend({
     template: view('column'),
 
@@ -11,20 +13,25 @@ module.exports = Vue.extend({
         row: function() {
             return this.$parent.row;
         },
+
         rowIndex: function() {
             return this.$parent.rowIndex;
         },
+
         updating: function() {
             return this.$parent.updating;
         },
+
         model: function() {
             return this.$parent.model;
         },
+
         data: function() {
             return this.row[this.column];
         },
+
         type: function() {
-            return this.model.attributes[ this.column ].type.key
+            return this.model.attributes[this.column].type.key;
         },
     },
 
@@ -40,28 +47,31 @@ module.exports = Vue.extend({
     },
 
     methods: {
+        modal: function() {
+            return this.$parent.modal();
+        },
+
+        save: function() {
+            return this.$parent.save();
+        },
+
+        isBigType: function() {
+            return this.type == Sequelize.TEXT().key;
+        },
+
         update: function() {
-            this.updating.type = this.type;
             this.updating.row = this.rowIndex;
             this.updating.column = this.columnIndex;
-            //
-            // if (this.$parent.updating.type == Sequelize.TEXT().key) {
-            //     this.$parent.modal.open();
-            // }
+            this.updating.type = this.type;
+            this.updating.value = this.row[this.column];
+
+            if (this.isBigType()) {
+                this.modal().open();
+            }
         },
 
         isUpdating: function() {
             return this.rowIndex == this.$parent.updating.row && this.columnIndex == this.$parent.updating.column;
         },
-
-        updated: function() {
-            this.updating.column = null;
-            this.updating.row = null;
-            this.updating.type = null;
-        },
-    },
-
-    created: function() {
-        // console.log(this.data);
     },
 });

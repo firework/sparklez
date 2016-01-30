@@ -14,21 +14,23 @@ module.exports = Vue.extend({
         columns: function() {
             return this.$parent.columns;
         },
+
         updating: function() {
             return this.$parent.updating;
         },
+
         model: function() {
             return this.$parent.model;
         },
     },
 
     methods: {
-        name: function() {
-            // ...
+        modal: function() {
+            return this.$parent.modal();
         },
-    },
 
-    created: function() {
-        // ...
+        save: function() {
+            return this.$parent.save();
+        }
     },
 });

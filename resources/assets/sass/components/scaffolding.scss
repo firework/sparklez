@@ -1,9 +1,13 @@
 .table-striped {
-    td {
-        min-width: 100px;
+    tr.active {
+        background-color: $active-color;
+        color: $white;
+    }
 
+    td {
         input {
-            width: 100%;
+            min-width: 150px;
+            color: $black;
         }
     }
 }

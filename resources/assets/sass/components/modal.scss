@@ -5,7 +5,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, .5);
+    background-color: rgba(0, 0, 0, .3);
     display: table;
     transition: opacity .3s ease;
 }
@@ -16,19 +16,18 @@
 }
 
 .modal-container {
-    width: 300px;
+    width: 50%;
     margin: 0 auto;
     padding: 20px 30px;
-    background-color: #fff;
+    background-color: $white;
     border-radius: 2px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
-    font-family: Helvetica, Arial, sans-serif;
 }
 
 .modal-header h3 {
     margin-top: 0;
-    color: #42b983;
+    color: $brand-color;
 }
 
 .modal-body {
@@ -56,5 +55,5 @@
 .modal-enter .modal-container,
 .modal-leave .modal-container {
     -webkit-transform: scale(1.1);
-            transform: scale(1.1);
+    transform: scale(1.1);
 }

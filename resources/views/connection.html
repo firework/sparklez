@@ -6,9 +6,13 @@
                 v-for="favorite in favorites"
                 :class="isFavoriteActive($index) ? 'active' : ''"
                 @click="setFavoriteActive($index)"
-            >{{ favorite.name }}</span>
+                @dblclick="connect()"
+            >
+                {{ favorite.name }}
+            </span>
         </nav>
     </div>
+
     <div class="pane sidebar">
         <div class="padded-more">
             <form>

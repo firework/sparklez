@@ -13,10 +13,6 @@
     </div>
 
     <div class="pane">
-        <pre>
-            {{ updating | json }}
-        </pre>
-
         <table class="table-striped">
             <thead>
                 <tr>
@@ -34,4 +30,25 @@
             </tbody>
         </table>
     </div>
+
+    <modal
+        v-ref:modal
+    >
+        <h3 slot="header">{{ columns[updating.column] }}</h3>
+
+        <div slot="body">
+            <div class="form-group">
+                <textarea
+                    rows="5"
+                    class="form-control vresize"
+                    v-model="updating.value"
+                ></textarea>
+            </div>
+        </div>
+
+        <div slot="footer">
+            <button class="btn btn-default" @click="modalClose">Cancel</button>
+            <button class="btn btn-positive pull-right" @click="save">Save</button>
+        </div>
+    </modal>
 </div>

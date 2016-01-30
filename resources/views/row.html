@@ -1,4 +1,6 @@
-<tr>
+<tr
+    :class="rowIndex == updating.row ? 'active' : ''"
+>
     <td
         is="column"
         v-for="column in columns"

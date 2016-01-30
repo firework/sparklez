@@ -1,0 +1,15 @@
+// =============================================================================
+// Resize
+// =============================================================================
+
+.noresize {
+  resize: none !important;
+}
+
+.vresize {
+  resize: vertical !important;
+}
+
+.hresize {
+  resize: horizontal !important;
+}

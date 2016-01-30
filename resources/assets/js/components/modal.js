@@ -21,8 +21,4 @@ module.exports = Vue.extend({
             this.active = false;
         },
     },
-
-    created: function() {
-        this.$parent.modal = this;
-    },
 });
