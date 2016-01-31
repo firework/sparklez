@@ -1,0 +1,17 @@
+<td
+    @dblclick="update()"
+>
+    <span
+        v-if="!isUpdating() || isBigType()"
+    >
+        {{ data | limit }}
+    </span>
+
+    <input
+        type="text"
+        v-model="updating.value"
+        v-if="isUpdating() && !isBigType()"
+        @blur="save"
+        @keyup.enter="save"
+    >
+</td>

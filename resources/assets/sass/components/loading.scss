@@ -28,7 +28,7 @@
 
     text-align: center;
 
-    color: #f9cc1f;
+    color: $brand-color;
 }
 
 .sk-fading-circle {
@@ -62,7 +62,7 @@
             animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
 
     border-radius: 100%;
-    background-color: #f9cc1f;
+    background-color: $brand-color;
 }
 .sk-fading-circle .sk-circle2 {
     -webkit-transform: rotate(30deg);

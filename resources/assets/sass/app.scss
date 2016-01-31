@@ -5,7 +5,16 @@
 @import 'node_modules/photon/sass/photon';
 
 // =============================================================================
+// Variables
+// =============================================================================
+
+@import 'variables';
+
+// =============================================================================
 // Components
 // =============================================================================
 
+@import 'components/generic';
+@import 'components/scaffolding';
 @import 'components/loading';
+@import 'components/modal';

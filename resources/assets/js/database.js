@@ -3,6 +3,11 @@ var Sequelize = require('sequelize');
 module.exports = Vue.extend({
     template: view('database'),
 
+    components: {
+        'row': require(jsDir + '/row'),
+        'modal': require(jsDir + '/components/modal'),
+    },
+
     data: function() {
         return {
             tableActive: null,
@@ -10,18 +15,14 @@ module.exports = Vue.extend({
             tables: [],
             columns: [],
             rows: [],
+            updating: {
+                row: null,
+                column: null,
+                type: null,
+                value: null,
+                saving: false,
+            }
         };
-    },
-
-    filters: {
-        limit: function(value, qty) {
-            value = String(value);
-            qty = qty || 50;
-
-            if (value.length < qty) return value;
-
-            return value.substr(0, qty) +  ' ...';
-        }
     },
 
     methods: {
@@ -33,6 +34,10 @@ module.exports = Vue.extend({
             return this.$parent.loading();
         },
 
+        modal: function() {
+            return this.$refs.modal;
+        },
+
         isTableActive: function(table) {
             return table == this.tableActive;
         },
@@ -42,6 +47,8 @@ module.exports = Vue.extend({
         },
 
         setTableActive: function(table) {
+            this.clearUpdating();
+
             this.model = require(sequelizeDir + '/' + table)(this.connection().sequelize, Sequelize);
 
             var columns = Object.keys(this.model.attributes);
@@ -83,5 +90,55 @@ module.exports = Vue.extend({
                 this.loading().stop();
             }.bind(this));
         },
+
+        clearUpdating: function() {
+            this.updating.column = null;
+            this.updating.row = null;
+            this.updating.type = null;
+            this.updating.value = null;
+        },
+
+        modalClose: function() {
+            this.clearUpdating();
+            this.modal().close();
+        },
+
+        save: function() {
+            if (this.updating.column === null || this.updating.saving === true) return;
+
+            // Check any changes
+            if (this.rows[this.updating.row][this.columns[this.updating.column]] == this.updating.value) {
+                this.clearUpdating();
+                return;
+            }
+
+            this.updating.saving = true;
+
+            this.loading().start();
+
+            // Create params for update
+            values = {};
+            options = {};
+
+            // Get column name
+            column = this.columns[this.updating.column];
+            values[column] = this.updating.value;
+
+            // Get row
+            row = this.rows[this.updating.row];
+            options.where = row;
+
+            this.model.update(values, options).then(function(results) {
+                if (this.modal().isActive()) {
+                    this.modal().close();
+                };
+
+                this.rows[this.updating.row][column] = this.updating.value;
+                this.clearUpdating();
+                this.updating.saving = false;
+
+                this.loading().stop();
+            }.bind(this));
+        }
     },
 });

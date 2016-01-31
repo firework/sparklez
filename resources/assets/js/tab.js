@@ -7,7 +7,11 @@ module.exports = Vue.extend({
         'loading': require(jsDir + '/components/loading'),
     },
 
-    props: ['tab', 'name', 'active'],
+    props: [
+        'tab',
+        'name',
+        'active'
+    ],
 
     methods: {
         connection: function() {
