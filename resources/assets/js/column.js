@@ -63,8 +63,12 @@ module.exports = Vue.extend({
             this.updating.type = this.type;
             this.updating.value = this.row[this.column];
 
+            // @TODO focus isn't currently working as for some reason electron ignores it...
             if (this.isBigType()) {
                 this.modal().open();
+                this.$parent.$parent.$els.field.focus();
+            } else {
+                this.$els.field.focus();
             }
         },
 

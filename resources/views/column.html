@@ -12,6 +12,7 @@
         type="text"
         v-model="data"
         v-if="!isBigType()"
+        v-el:field
         @blur="save(data)"
         @keyup.enter="save(data)"
         :readonly="!isUpdating()"

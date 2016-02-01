@@ -11,7 +11,7 @@
             color: $white;
         }
 
-        td.active input, td.active.big span {
+        td.active, td.active input, td.active.big {
             background-color: $white;
             color: $black;
         }
