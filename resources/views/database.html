@@ -16,7 +16,15 @@
         <table class="table-striped">
             <thead>
                 <tr>
-                    <th v-for="column in columns">{{ column }}</th>
+                    <th
+                        v-for="column in columns"
+                        @click="sortColumn(column)"
+                    >
+                        {{ column }}
+                        <span class="icon icon-{{ sort.asc ? 'down' : 'up' }}-open"
+                            v-show="sort.column == column"
+                        ></span>
+                    </th>
                 </tr>
             </thead>
 

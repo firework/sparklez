@@ -15,6 +15,10 @@ module.exports = Vue.extend({
             tables: [],
             columns: [],
             rows: [],
+            sort: {
+                column: null,
+                asc: null,
+            },
             updating: {
                 row: null,
                 column: null,
@@ -71,6 +75,8 @@ module.exports = Vue.extend({
                 this.tableActive = table;
                 this.columns = columns;
                 this.rows = rows;
+                this.sort.column = null;
+                this.sort.asc = null;
             }.bind(this)).done(function(e) {
                 this.loading().stop();
             }.bind(this));
@@ -139,6 +145,11 @@ module.exports = Vue.extend({
 
                 this.loading().stop();
             }.bind(this));
+        },
+
+        sortColumn: function(column) {
+            this.sort.asc = this.sort.column == column ? !this.sort.asc : true;
+            this.sort.column = column;
         }
     },
 });
