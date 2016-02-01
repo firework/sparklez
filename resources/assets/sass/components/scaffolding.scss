@@ -7,18 +7,42 @@
         background-color: $active-color;
         color: $white;
 
-        td.active input {
+        input {
+            color: $white;
+        }
+
+        td.active input, td.active.big span {
             background-color: $white;
             color: $black;
         }
     }
 
-    td {
-        input {
-            background: transparent;
-            border: none;
-            min-width: 150px;
-            color: $black;
+    tr {
+        th {
+            padding: 5px 10px;
+        }
+
+        td {
+            padding: 2px 5px;
+
+            input {
+                background: transparent;
+                border: none;
+                min-width: 50px;
+                color: $black;
+                padding: 2px 5px;
+
+                &:focus {
+                    outline: none;
+                }
+            }
+
+            span {
+                display: block;
+                padding: 2px 5px;
+                width: 100%;
+            }
         }
     }
+
 }
