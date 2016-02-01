@@ -1,17 +1,19 @@
 <td
     @dblclick="update()"
+    :class="{ active: isUpdating() }"
 >
     <span
-        v-if="!isUpdating() || isBigType()"
+        v-if="isBigType()"
     >
         {{ data | limit }}
     </span>
 
     <input
         type="text"
-        v-model="updating.value"
-        v-if="isUpdating() && !isBigType()"
-        @blur="save"
-        @keyup.enter="save"
+        v-model="data"
+        v-if="!isBigType()"
+        @blur="save(data)"
+        @keyup.enter="save(data)"
+        :readonly="!isUpdating()"
     >
 </td>

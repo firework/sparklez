@@ -26,10 +26,6 @@ module.exports = Vue.extend({
             return this.$parent.model;
         },
 
-        data: function() {
-            return this.row[this.column];
-        },
-
         type: function() {
             return this.model.attributes[this.column].type.key;
         },
@@ -51,7 +47,9 @@ module.exports = Vue.extend({
             return this.$parent.modal();
         },
 
-        save: function() {
+        save: function(data) {
+            this.updating.value = data;
+
             return this.$parent.save();
         },
 

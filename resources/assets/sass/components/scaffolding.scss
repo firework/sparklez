@@ -1,11 +1,22 @@
 .table-striped {
+    tr:active input {
+        color: $white;
+    }
+
     tr.active {
         background-color: $active-color;
         color: $white;
+
+        td.active input {
+            background-color: $white;
+            color: $black;
+        }
     }
 
     td {
         input {
+            background: transparent;
+            border: none;
             min-width: 150px;
             color: $black;
         }
