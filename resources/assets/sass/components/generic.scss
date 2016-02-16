@@ -3,13 +3,40 @@
 // =============================================================================
 
 .noresize {
-  resize: none !important;
+    resize: none !important;
 }
 
 .vresize {
-  resize: vertical !important;
+    resize: vertical !important;
 }
 
 .hresize {
-  resize: horizontal !important;
+    resize: horizontal !important;
+}
+
+// =============================================================================
+// Cursor Pointer
+// =============================================================================
+.pointer {
+    cursor: pointer;
+}
+
+.btn {
+    @extend .pointer;
+
+    .icon {
+        @extend .pointer;
+    }
+}
+
+.nav-group-item {
+    @extend .pointer;
+}
+
+.data-rows {
+    table {
+        th, td , input {
+            @extend .pointer;
+        }
+    }
 }

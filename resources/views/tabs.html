@@ -1,5 +1,5 @@
 <div class="tab-group">
-    <div class="tab-item active"
+    <div class="tab-item active pointer"
          v-for="item in items"
          :class="isActive($index) ? 'active' : ''"
          @click="setActive($index)"
@@ -10,7 +10,7 @@
         {{ item }}
     </div>
 
-    <div class="tab-item tab-item-fixed"
+    <div class="tab-item tab-item-fixed pointer"
          @click="add()"
     >
         <span class="icon icon-plus"></span>
