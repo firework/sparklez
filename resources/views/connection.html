@@ -2,7 +2,7 @@
     <div class="pane pane-sm sidebar">
         <nav class="nav-group">
             <h5 class="nav-group-title">Favorites</h5>
-            <span class="nav-group-item"
+            <span class="nav-group-item pointer"
                 v-for="favorite in favorites"
                 :class="isFavoriteActive($index) ? 'active' : ''"
                 @click="setFavoriteActive($index)"
@@ -52,10 +52,10 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-form btn-default"
+                    <button type="button" class="btn btn-form btn-default pointer"
                         @click="connect()"
                     >
-                        <span class="icon icon-flash icon-text"></span> Connect
+                        <span class="icon icon-flash icon-text pointer"></span> Connect
                     </button>
                 </div>
             </form>
