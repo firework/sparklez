@@ -70,13 +70,12 @@ module.exports = Vue.extend({
                     freezeTableName: true
                 });
 
-                this.model.findAll({
-                    attributes: columns,
-                }).then(function(rows) {
+                this.model.findAll().then(function(rows) {
                     this.tableActive = table;
                     this.columns = columns;
-                    this.rows = rows;
-                }.bind(this)).done(function(e) {
+                    this.rows = rows.map(function(row) {
+                        return row.toJSON();
+                    });
                     this.loading().stop();
                 }.bind(this));
             }.bind(this));
