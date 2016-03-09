@@ -70,7 +70,9 @@ module.exports = Vue.extend({
                     freezeTableName: true
                 });
 
-                this.model.findAll().then(function(rows) {
+                this.model.findAll({
+                    limit: 50,
+                }).then(function(rows) {
                     this.tableActive = table;
                     this.columns = columns;
                     this.rows = rows.map(function(row) {

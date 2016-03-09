@@ -27,7 +27,7 @@ module.exports = Vue.extend({
         },
 
         type: function() {
-            return this.model.attributes[this.column].type.key;
+            return this.model.attributes[this.column].type;
         },
     },
 
