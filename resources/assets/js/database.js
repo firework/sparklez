@@ -53,47 +53,43 @@ module.exports = Vue.extend({
         setTableActive: function(table) {
             this.clearUpdating();
 
-            this.model = require(sequelizeDir + '/' + table)(this.connection().sequelize, Sequelize);
+            this.connection().queryInterface.describeTable(table).then(function(attributes) {
+                var columns = Object.keys(attributes);
 
-            var columns = Object.keys(this.model.attributes);
+                this.loading().start();
 
-            this.loading().start();
-
-            this.model.sequelize.query("SELECT * FROM "+this.model.name+" as "+this.model.name, {
-                type: this.model.sequelize.QueryTypes.SELECT
-            }).then(function(result) {
-                var rows = [];
-
-                if (typeof(result[0]) != 'undefined') {
-                    columns = this.getColumnsByRow(result[0]);
-                }
-
-                for (x in result) {
-                    rows.push(result[x]);
-                }
-
-                this.tableActive = table;
-                this.columns = columns;
-                this.rows = rows;
+                this.tableActive = null;
+                this.columns = [];
+                this.rows = [];
                 this.sort.column = null;
                 this.sort.asc = null;
-            }.bind(this)).done(function(e) {
-                this.loading().stop();
+
+                this.model = this.connection().sequelize.define(table, attributes, {
+                    tableName: table,
+                    timestamps: false,
+                    freezeTableName: true
+                });
+
+                this.model.findAll({
+                    attributes: columns,
+                }).then(function(rows) {
+                    this.tableActive = table;
+                    this.columns = columns;
+                    this.rows = rows;
+                }.bind(this)).done(function(e) {
+                    this.loading().stop();
+                }.bind(this));
             }.bind(this));
         },
 
         create: function() {
             if (this.connection().loaded) return;
 
-            fs.readdir(sequelizeDir, function(err, files) {
-                for (x in files) {
-                    files[x] = files[x].replace('.js', '');
-                }
+            this.connection().queryInterface.showAllTables().then(function(tables) {
+                this.tables = tables;
 
-                this.tables = files;
-                this.setTableActive(files[0]);
+                this.setTableActive(tables[0]);
                 this.connection().loaded = true;
-                this.loading().stop();
             }.bind(this));
         },
 

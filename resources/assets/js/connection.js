@@ -1,5 +1,4 @@
-var Sequelize = require('sequelize'),
-    SequelizeAuto = require('sequelize-auto');
+var Sequelize = require('sequelize');
 
 module.exports = Vue.extend({
     template: view('connection'),
@@ -33,6 +32,7 @@ module.exports = Vue.extend({
             password: null,
             database: null,
             sequelize: null,
+            queryInterface: null,
         };
     },
 
@@ -64,29 +64,12 @@ module.exports = Vue.extend({
             });
 
             this.sequelize.authenticate().then(function(errors) {
-                var sequelizeAuto = new SequelizeAuto(this.database, this.username, this.password, {
-                    host: this.server,
-                    port: this.port
-                });
+                this.queryInterface = this.sequelize.getQueryInterface();
 
-                sequelizeAuto.run({
-                    spaces: true,
-                    indentation: 4,
-                    directory: sequelizeDir,
-                    additional: {
-                        timestamps: false,
-                    }
-                }, function(err){
-                    if (err) {
-                        alert('Something went wrong, please try again.');
-                        this.loading().stop();
-                    }
+                this.active = true;
+                this.loaded = false;
 
-                    this.active = true;
-                    this.loaded = false;
-
-                    this.$parent.database().create();
-                }.bind(this));
+                this.$parent.database().create();
             }.bind(this)).catch(function(errors) {
                 alert('Wrong credentials, please try again.');
                 this.loading().stop();
