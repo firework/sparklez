@@ -5,12 +5,13 @@
   "main": "app/index.js",
   "scripts": {
     "start": "electron public/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "node server/app.js"
   },
   "author": "Daniel Polito <contato@dbpolito.net> (http://dbpolito.net)",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
     "express": "^4.13.4",
     "laravel-elixir": "^5.0.0",
     "mysql": "^2.10.2",

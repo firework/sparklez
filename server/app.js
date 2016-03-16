@@ -1,10 +1,9 @@
-var express = require('express'),
-    bodyParser = require('body-parser'),
+var app = require('express')(),
     Sequelize = require('sequelize'),
-    app = express(),
     sequelize;
 
-app.use(bodyParser.json());
+app.use(require('body-parser').json());
+app.use(require('cors')());
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
