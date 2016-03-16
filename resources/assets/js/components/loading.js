@@ -1,5 +1,5 @@
-module.exports = Vue.extend({
-    template: view('components/loading'),
+module.exports = {
+    template: require('./../../../views/components/loading.html'),
 
     data: function() {
         return {
@@ -23,4 +23,4 @@ module.exports = Vue.extend({
             this.active = false;
         },
     },
-});
+};

@@ -1,10 +1,10 @@
-module.exports = Vue.extend({
-    template: view('tab'),
+module.exports = {
+    template: require('./../../views/tab.html'),
 
     components: {
-        'connection': require(jsDir + '/connection'),
-        'database': require(jsDir + '/database'),
-        'loading': require(jsDir + '/components/loading'),
+        'connection': require('./connection'),
+        'database': require('./database'),
+        'loading': require('./components/loading'),
     },
 
     props: [
@@ -46,4 +46,4 @@ module.exports = Vue.extend({
             return this.active && !this.connection().active;
         },
     },
-});
+};

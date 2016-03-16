@@ -1,17 +1,17 @@
-var Sequelize = require('sequelize');
-
-module.exports = Vue.extend({
-    template: view('database'),
+module.exports = {
+    template: require('./../../views/database.html'),
 
     components: {
-        'row': require(jsDir + '/row'),
-        'modal': require(jsDir + '/components/modal'),
+        'row': require('./row'),
+        'modal': require('./components/modal'),
     },
 
     data: function() {
         return {
             tableActive: null,
-            model: null,
+            model: {
+                attributes: {},
+            },
             tables: [],
             columns: [],
             rows: [],
@@ -53,8 +53,11 @@ module.exports = Vue.extend({
         setTableActive: function(table) {
             this.clearUpdating();
 
-            this.connection().queryInterface.describeTable(table).then(function(attributes) {
-                var columns = Object.keys(attributes);
+            this.$http.post('http://localhost:3000/table', {
+                table: table,
+            }).then(function(response) {
+                var attributes = response.data.attributes,
+                    columns = Object.keys(attributes);
 
                 this.loading().start();
 
@@ -64,20 +67,15 @@ module.exports = Vue.extend({
                 this.sort.column = null;
                 this.sort.asc = null;
 
-                this.model = this.connection().sequelize.define(table, attributes, {
-                    tableName: table,
-                    timestamps: false,
-                    freezeTableName: true
-                });
-
-                this.model.findAll({
+                this.$http.post('http://localhost:3000/rows', {
+                    table: table,
+                    attributes: attributes,
                     limit: 50,
-                }).then(function(rows) {
+                }).then(function(response) {
                     this.tableActive = table;
                     this.columns = columns;
-                    this.rows = rows.map(function(row) {
-                        return row.toJSON();
-                    });
+                    this.model.attributes = attributes;
+                    this.rows = response.data.rows;
                     this.loading().stop();
                 }.bind(this));
             }.bind(this));
@@ -86,7 +84,9 @@ module.exports = Vue.extend({
         create: function() {
             if (this.connection().loaded) return;
 
-            this.connection().queryInterface.showAllTables().then(function(tables) {
+            this.$http.get('http://localhost:3000/tables').then(function(response) {
+                var tables = response.data.tables;
+
                 this.tables = tables;
 
                 this.setTableActive(tables[0]);
@@ -149,4 +149,4 @@ module.exports = Vue.extend({
             this.sort.column = column;
         }
     },
-});
+};

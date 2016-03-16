@@ -1,8 +1,8 @@
-module.exports = Vue.extend({
-    template: view('row'),
+module.exports = {
+    template: require('./../../views/row.html'),
 
     components: {
-        'column': require(jsDir + '/column'),
+        'column': require('./column'),
     },
 
     props: [
@@ -33,4 +33,4 @@ module.exports = Vue.extend({
             return this.$parent.save();
         }
     },
-});
+};

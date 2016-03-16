@@ -1,8 +1,8 @@
-module.exports = Vue.extend({
-    template: view('tabs'),
+module.exports = {
+    template: require('./../../views/tabs.html'),
 
     components: {
-        'tab': require(jsDir + '/tab'),
+        'tab': require('./tab'),
     },
 
     props: ['tab'],
@@ -47,4 +47,4 @@ module.exports = Vue.extend({
     created: function() {
         this.add();
     },
-});
+};

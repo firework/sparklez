@@ -1,7 +1,5 @@
-var Sequelize = require('sequelize');
-
-module.exports = Vue.extend({
-    template: view('column'),
+module.exports = {
+    template: require('./../../views/column.html'),
 
     props: [
         'column',
@@ -27,6 +25,7 @@ module.exports = Vue.extend({
         },
 
         type: function() {
+            return; // TODO FIX IT
             return this.model.attributes[this.column].type;
         },
     },
@@ -54,6 +53,7 @@ module.exports = Vue.extend({
         },
 
         isBigType: function() {
+            return; // @TODO FIX IT
             return this.type == Sequelize.TEXT().key;
         },
 
@@ -76,4 +76,4 @@ module.exports = Vue.extend({
             return this.rowIndex == this.$parent.updating.row && this.columnIndex == this.$parent.updating.column;
         },
     },
-});
+};

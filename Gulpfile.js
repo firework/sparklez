@@ -1,4 +1,5 @@
 var elixir = require('laravel-elixir');
+
 require('laravel-elixir-livereload');
 
 elixir(function(mix) {
@@ -6,7 +7,7 @@ elixir(function(mix) {
         .copy('node_modules/photon/fonts', 'public/fonts')
         .copy('resources/views', 'public/views')
         .copy('resources/assets/img', 'public/img')
-        .copy('resources/assets/js', 'public/js')
+        .browserify('app.js')
         .sass('app.scss')
     ;
 
