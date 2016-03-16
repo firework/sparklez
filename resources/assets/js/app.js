@@ -1,5 +1,4 @@
-var fs = require('fs'),
-    Vue = require('vue');
+var Vue = require('vue');
 
 Vue.use(require('vue-resource'));
 
