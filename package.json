@@ -5,7 +5,8 @@
   "main": "app/index.js",
   "scripts": {
     "start": "electron public/app.js",
-    "server": "node server/app.js"
+    "server": "node server/app.js",
+    "reinstall": "rm -rf node_modules/ && npm i --no-progress"
   },
   "author": "Daniel Polito <contato@dbpolito.net> (http://dbpolito.net)",
   "license": "MIT",
@@ -18,16 +19,16 @@
     "pg": "^4.5.1",
     "pg-hstore": "^2.3.2",
     "photon": "git://github.com/connors/photon.git#master",
-    "pouchdb": "^5.3.0",
+    "pouchdb": "^5.3.1",
     "sequelize": "^3.19.3",
     "sqlite3": "^3.1.1",
     "tedious": "^1.13.2",
-    "tunnel-ssh": "^3.0.0-alpha",
-    "vue": "^1.0.17",
+    "tunnel-ssh": "^3.2.1-beta",
+    "vue": "^1.0.18",
     "vue-resource": "^0.7.0"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.36.10",
+    "electron-prebuilt": "^0.37.2",
     "gulp": "^3.9.1",
     "laravel-elixir-livereload": "^1.1.4",
     "vue-devtools": "git://github.com/vuejs/vue-devtools#master"
