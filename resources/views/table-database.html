@@ -1,0 +1,47 @@
+<table class="table-striped">
+    <thead>
+        <tr>
+            <th
+                v-for="column in columns"
+                @click="orderBy(column)"
+            >
+                {{ column }}
+
+                <span class="icon icon-{{ sort.asc ? 'down' : 'up' }}-open"
+                    v-show="sort.column == column"
+                ></span>
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr
+            v-for="(rowIndex, row) in rows"
+            :class="{
+                'active': updating.row == $index,
+            }"
+        >
+            <td
+                v-for="(columnIndex, column) in columns"
+                @dblclick="update(row, rowIndex, column, columnIndex)"
+                :class="{
+                    'active': isUpdating(rowIndex, columnIndex),
+                    'big': isBigType(column)
+                }"
+            >
+                <span v-if="isBigType(column)">
+                    {{ row[column] | limit }}
+                </span>
+
+                <input
+                    type="text"
+                    v-model="row[column]"
+                    v-if="! isBigType(column)"
+                    @blur="save()"
+                    @keyup.enter="save()"
+                    :readonly="! isUpdating(rowIndex, columnIndex)"
+                >
+            </td>
+        </tr>
+    </tbody>
+</table>

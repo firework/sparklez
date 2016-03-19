@@ -2,7 +2,7 @@ module.exports = {
     template: require('./../../views/database.html'),
 
     components: {
-        'row': require('./row'),
+        'table-database': require('./table-database'),
         'modal': require('./components/modal'),
     },
 
@@ -15,15 +15,11 @@ module.exports = {
             tables: [],
             columns: [],
             rows: [],
-            sort: {
-                column: null,
-                asc: null,
-            },
             updating: {
                 row: null,
                 column: null,
                 type: null,
-                value: null,
+                oldVal: null,
                 saving: false,
             }
         };
@@ -64,8 +60,6 @@ module.exports = {
                 this.tableActive = null;
                 this.columns = [];
                 this.rows = [];
-                this.sort.column = null;
-                this.sort.asc = null;
 
                 this.$http.post('http://localhost:3000/rows', {
                     table: table,
@@ -98,7 +92,7 @@ module.exports = {
             this.updating.column = null;
             this.updating.row = null;
             this.updating.type = null;
-            this.updating.value = null;
+            this.updating.oldVal = null;
         },
 
         modalClose: function() {
@@ -109,44 +103,41 @@ module.exports = {
         save: function() {
             if (this.updating.column === null || this.updating.saving === true) return;
 
+            var newVal = this.rows[this.updating.row][this.columns[this.updating.column]];
+
             // Check any changes
-            if (this.rows[this.updating.row][this.columns[this.updating.column]] == this.updating.value) {
+            if (newVal == this.updating.oldVal) {
                 this.clearUpdating();
                 return;
             }
 
             this.updating.saving = true;
-
             this.loading().start();
 
             // Create params for update
-            values = {};
-            options = {};
+            var values = {},
+                options = {};
 
             // Get column name
-            column = this.columns[this.updating.column];
-            values[column] = this.updating.value;
+            var column = this.columns[this.updating.column];
+            values[column] = newVal;
 
             // Get row
-            row = this.rows[this.updating.row];
+            var row = this.rows[this.updating.row];
             options.where = row;
 
-            this.model.update(values, options).then(function(results) {
+            // TODO: create the update function on app.js (server)
+            // this.model.update(values, options).then(function(results) {
                 if (this.modal().isActive()) {
                     this.modal().close();
                 };
 
-                this.rows[this.updating.row][column] = this.updating.value;
+                this.rows[this.updating.row][column] = newVal;
                 this.clearUpdating();
                 this.updating.saving = false;
 
                 this.loading().stop();
-            }.bind(this));
+            // }.bind(this));
         },
-
-        sortColumn: function(column) {
-            this.sort.asc = this.sort.column == column ? !this.sort.asc : true;
-            this.sort.column = column;
-        }
     },
 };
