@@ -6,7 +6,7 @@ app.use(require('body-parser').json());
 app.use(require('cors')());
 
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+    res.send('Hello World!');
 });
 
 app.post('/connect', function (req, res) {
@@ -22,6 +22,8 @@ app.post('/connect', function (req, res) {
             status: 'OK',
         });
     }).catch(function(errors) {
+        console.log(errors);
+
         res.send({
             status: 'ERROR',
             message: 'Wrong credentials, please try again.',
@@ -68,5 +70,5 @@ app.post('/rows', function (req, res) {
 });
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+    console.log('Example app listening on port 3000!');
 });
