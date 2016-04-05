@@ -1,6 +1,5 @@
 var app = require('express')(),
-    Sequelize = require('sequelize'),
-    sequelize;
+    database = require('./../lib/database');
 
 app.use(require('body-parser').json());
 app.use(require('cors')());
@@ -12,12 +11,7 @@ app.get('/', function (req, res) {
 app.post('/connect', function (req, res) {
     var data = req.body;
 
-    sequelize = new Sequelize(data.database, data.username, data.password, {
-        host: data.server,
-        port: data.port
-    });
-
-    sequelize.authenticate().then(function(errors) {
+    database.connect(data).then(function(errors) {
         res.send({
             status: 'OK',
         });
@@ -31,8 +25,10 @@ app.post('/connect', function (req, res) {
     });
 });
 
-app.get('/tables', function (req, res) {
-    sequelize.getQueryInterface().showAllTables().then(function(tables) {
+app.post('/tables', function (req, res) {
+    var data = req.body;
+
+    database.getTables(data).then(function(tables) {
         res.send({
             tables: tables,
         });
@@ -42,7 +38,7 @@ app.get('/tables', function (req, res) {
 app.post('/table', function (req, res) {
     var data = req.body;
 
-    sequelize.getQueryInterface().describeTable(data.table).then(function(attributes) {
+    database.getTableInfo(data).then(function(attributes) {
         res.send({
             attributes: attributes,
         });
@@ -52,15 +48,7 @@ app.post('/table', function (req, res) {
 app.post('/rows', function (req, res) {
     var data = req.body;
 
-    var model = sequelize.define(data.table, data.attributes, {
-        tableName: data.table,
-        timestamps: false,
-        freezeTableName: true
-    });
-
-    model.findAll({
-        limit: data.limit,
-    }).then(function(rows) {
+    database.getTableData(data).then(function(rows) {
         res.send({
             rows: rows.map(function(row) {
                 return row.toJSON();

@@ -62,6 +62,7 @@ module.exports = {
                 password: this.password,
                 host: this.server,
                 port: this.port,
+                id: this.$parent._uid,
             }).then(function(response) {
                 console.log(response.data);
 

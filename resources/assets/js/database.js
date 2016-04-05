@@ -51,6 +51,7 @@ module.exports = {
 
             this.$http.post('http://localhost:3000/table', {
                 table: table,
+                id: this.$parent._uid,
             }).then(function(response) {
                 var attributes = response.data.attributes,
                     columns = Object.keys(attributes);
@@ -65,6 +66,7 @@ module.exports = {
                     table: table,
                     attributes: attributes,
                     limit: 50,
+                    id: this.$parent._uid,
                 }).then(function(response) {
                     this.tableActive = table;
                     this.columns = columns;
@@ -78,7 +80,9 @@ module.exports = {
         create: function() {
             if (this.connection().loaded) return;
 
-            this.$http.get('http://localhost:3000/tables').then(function(response) {
+            this.$http.post('http://localhost:3000/tables', {
+                id: this.$parent._uid,
+            }).then(function(response) {
                 var tables = response.data.tables;
 
                 this.tables = tables;
