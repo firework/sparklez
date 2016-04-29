@@ -11,49 +11,32 @@ app.get('/', function (req, res) {
 app.post('/connect', function (req, res) {
     var data = req.body;
 
-    database.connect(data).then(function(errors) {
-        res.send({
-            status: 'OK',
-        });
-    }).catch(function(errors) {
-        console.log(errors);
-
-        res.send({
-            status: 'ERROR',
-            message: 'Wrong credentials, please try again.',
-        });
+    database.connect(data).then(function(response) {
+        res.send(response);
     });
 });
 
 app.post('/tables', function (req, res) {
     var data = req.body;
 
-    database.getTables(data).then(function(tables) {
-        res.send({
-            tables: tables,
-        });
+    database.getTables(data).then(function(response) {
+        res.send(response);
     });
 });
 
 app.post('/table', function (req, res) {
     var data = req.body;
 
-    database.getTableInfo(data).then(function(attributes) {
-        res.send({
-            attributes: attributes,
-        });
+    database.getTableInfo(data).then(function(response) {
+        res.send(response);
     });
 });
 
 app.post('/rows', function (req, res) {
     var data = req.body;
 
-    database.getTableData(data).then(function(rows) {
-        res.send({
-            rows: rows.map(function(row) {
-                return row.toJSON();
-            }),
-        });
+    database.getTableData(data).then(function(response) {
+        res.send(response);
     });
 });
 

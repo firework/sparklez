@@ -1,4 +1,6 @@
 node_modules
 public/*
 !public/app.js
+!public/index_electron.html
+!public/index_web.html
 *.log

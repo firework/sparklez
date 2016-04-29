@@ -49,29 +49,29 @@ module.exports = {
         setTableActive: function(table) {
             this.clearUpdating();
 
-            this.$http.post('http://localhost:3000/table', {
+            this.loading().start();
+
+            database.getTableInfo({
                 table: table,
                 id: this.$parent._uid,
-            }).then(function(response) {
-                var attributes = response.data.attributes,
+            }).then(function(data) {
+                var attributes = data.attributes,
                     columns = Object.keys(attributes);
-
-                this.loading().start();
 
                 this.tableActive = null;
                 this.columns = [];
                 this.rows = [];
 
-                this.$http.post('http://localhost:3000/rows', {
+                database.getTableData({
                     table: table,
                     attributes: attributes,
                     limit: 50,
                     id: this.$parent._uid,
-                }).then(function(response) {
+                }).then(function(data) {
                     this.tableActive = table;
                     this.columns = columns;
                     this.model.attributes = attributes;
-                    this.rows = response.data.rows;
+                    this.rows = data.rows;
                     this.loading().stop();
                 }.bind(this));
             }.bind(this));
@@ -80,14 +80,12 @@ module.exports = {
         create: function() {
             if (this.connection().loaded) return;
 
-            this.$http.post('http://localhost:3000/tables', {
+            database.getTables({
                 id: this.$parent._uid,
-            }).then(function(response) {
-                var tables = response.data.tables;
+            }).then(function(data) {
+                this.tables = data.tables;
 
-                this.tables = tables;
-
-                this.setTableActive(tables[0]);
+                this.setTableActive(data.tables[0]);
                 this.connection().loaded = true;
             }.bind(this));
         },

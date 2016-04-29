@@ -7,7 +7,8 @@ elixir(function(mix) {
         .copy('node_modules/photon/fonts', 'public/fonts')
         .copy('resources/views', 'public/views')
         .copy('resources/assets/img', 'public/img')
-        .browserify('app.js')
+        .browserify('app_web.js')
+        .browserify('app_electron.js')
         .sass('app.scss')
     ;
 

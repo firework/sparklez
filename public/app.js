@@ -20,15 +20,12 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
-    // Start internal server
-    require('./../server/app');
-
     // Create the browser window.
     mainWindow = new BrowserWindow();
     mainWindow.maximize();
 
     // and load the index.html of the app.
-    mainWindow.loadURL('file://' + __dirname + '/views/index.html');
+    mainWindow.loadURL('file://' + __dirname + '/index_electron.html');
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();

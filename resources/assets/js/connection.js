@@ -56,17 +56,15 @@ module.exports = {
         connect: function() {
             this.loading().start();
 
-            this.$http.post('http://localhost:3000/connect', {
+            database.connect({
                 database: this.database,
                 username: this.username,
                 password: this.password,
                 host: this.server,
                 port: this.port,
                 id: this.$parent._uid,
-            }).then(function(response) {
-                console.log(response.data);
-
-                if (response.data.status == 'OK') {
+            }).then(function(data) {
+                if (data.status == 'OK') {
                     this.active = true;
                     this.loaded = false;
 
