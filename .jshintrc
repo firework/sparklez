@@ -1,0 +1,7 @@
+{
+  "esversion": 6,
+  "asi": true,
+  "curly": true,
+  "eqeqeq": true,
+  "trailing": true
+}

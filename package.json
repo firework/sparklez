@@ -1,0 +1,28 @@
+{
+  "name": "sparklez",
+  "main": "src/electron.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
+    "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
+    "prod": "cross-env NODE_ENV=production webpack --hide-modules",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "element-ui": "^1.2.7",
+    "font-awesome": "^4.7.0",
+    "knex": "^0.12.9",
+    "moment": "^2.18.1",
+    "mysql": "^2.13.0",
+    "vue": "^2.2.6"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "cross-env": "^4.0.0",
+    "electron": "^1.6.2",
+    "html-webpack-plugin": "^2.24.1",
+    "laravel-mix": "^0.10.0",
+    "webpack": "^2.3.3",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
