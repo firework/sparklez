@@ -2,26 +2,40 @@
     <div id="app">
         <el-row>
             <el-col :span="4">
-                <el-menu>
-                    <el-menu-item
-                        :index="tableFilter"
-                    >
+                <el-menu id="menu"
+                    @select="setTableActive"
+                >
+                    <li class="el-menu-item">
+                        <el-select
+                            v-model="databaseActive"
+                            @change="loadTables"
+                            filterable
+                            placeholder="Select database"
+                        >
+                            <el-option
+                                v-for="database in databases"
+                                :key="database"
+                                :label="database"
+                                :value="database"
+                            ></el-option>
+                        </el-select>
+                    </li>
+                    <li class="el-menu-item">
                         <el-input
                             v-model="tableFilter"
                             placeholder="Filter"
                         ></el-input>
-                    </el-menu-item>
+                    </li>
                     <el-menu-item
                         v-for="table in tablesFiltered"
                         :key="table"
                         :index="table"
                         v-text="table"
-                        @click="setTableActive(table)"
                     ></el-menu-item>
                 </el-menu>
             </el-col>
             <el-col :span="20">
-                <div class="el-table-wrapper">
+                <div class="el-table-wrapper" id="content">
                     <div class="el-table">
                         <table cellspacing="0" cellpadding="0">
                             <thead>
@@ -38,6 +52,7 @@
                                 <tr
                                     v-for="(row, key) in tableData"
                                     :key="key"
+                                    @click="setRowActive(row)"
                                 >
                                     <td
                                         v-for="column in tableColumns"
@@ -54,21 +69,30 @@
                             <span class="el-table__empty-text">No result</span>
                         </div>
                     </div>
+                    <el-dialog
+                        v-model="hasRowActive"
+                        title="Edit Row"
+                        @close="setRowActive(null)"
+                    >
+                        <el-form
+                            v-if="hasRowActive"
+                            :model="rowForm"
+                        >
+                            <el-form-item
+                                v-for="column in tableColumns"
+                                :key="column"
+                                :label="column">
+                                <el-input
+                                    v-model="rowForm[column]"
+                                ></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="setRowActive(null)">Cancel</el-button>
+                            <el-button type="primary" @click="submitRow(rowActive)">Confirm</el-button>
+                        </div>
+                    </el-dialog>
                 </div>
-                <!--
-                <br><hr><br>
-                <el-table
-                    :data="tableData"
-                    stripe
-                >
-                    <el-table-column
-                        v-for="tableColumn in tableColumns"
-                        :key="tableColumn"
-                        :prop="tableColumn"
-                        :label="tableColumn"
-                    ></el-table-column>
-                </el-table>
-                -->
             </el-col>
         </el-row>
     </div>
@@ -76,48 +100,71 @@
 
 <script>
 import Knex from 'knex'
+import { clone as _clone } from 'lodash'
 
 export default {
     data: () => ({
         knex: null,
+        databases: [],
+        databaseActive: null,
+        databaseDefault: 'docker',
         tables: [],
         tableActive: null,
         tableColumns: [],
         tableData: [],
         tableFilter: '',
+        rowActive: null,
+        rowForm: null,
     }),
 
     computed: {
-        tablesFiltered () {
+        tablesFiltered() {
             return this.tables.filter(table => {
-                return ! this.tableFilter || table.indexOf(this.tableFilter) !== -1
+                return (
+                    !this.tableFilter || table.indexOf(this.tableFilter) !== -1
+                )
             })
+        },
+
+        hasRowActive() {
+            return !!this.rowActive
         },
     },
 
     methods: {
-        setTableActive (table) {
+        setTableActive(table) {
             if (table === this.tableActive) return
 
             this.tableActive = table
             this.loadTable(table)
         },
 
-        loadTables () {
-            this.knex = Knex({
-                client: 'mysql',
-                connection: {
-                    host : '127.0.0.1',
-                    user : 'docker',
-                    password : 'secret',
-                    database : 'docker',
-                    dateStrings: true,
-                },
-            });
+        setDatabaseActive(database) {
+            this.databaseActive = database
+        },
 
-            this.knex.select('table_name')
+        setRowActive(row) {
+            this.rowActive = row
+            this.rowForm = _clone(row)
+        },
+
+        loadDatabases() {
+            this.knex
+                .select('table_schema')
                 .from('information_schema.tables')
-                .where({table_schema: 'docker'})
+                .groupBy('table_schema')
+                .pluck('table_schema')
+                .then(databases => {
+                    this.databases = databases
+                    this.setDatabaseActive(this.databaseDefault)
+                })
+        },
+
+        loadTables(database) {
+            this.knex
+                .select('table_name')
+                .from('information_schema.tables')
+                .where({ table_schema: database })
                 .pluck('table_name')
                 .then(tables => {
                     this.tables = tables
@@ -125,35 +172,81 @@ export default {
                 })
         },
 
-        loadTable (table) {
+        loadTable(table) {
             this.loadTableColumns(table)
             this.loadTableData(table)
         },
 
-        loadTableColumns (table) {
-            this.knex.from(table).columnInfo().then(tableColumns => {
-                this.tableColumns = Object.keys(tableColumns)
-            })
+        loadTableColumns(table) {
+            this.knex
+                .select('column_name')
+                .from('information_schema.columns')
+                .where({
+                    table_schema: this.databaseActive,
+                    table_name: table,
+                })
+                .pluck('column_name')
+                .then(tableColumns => {
+                    this.tableColumns = tableColumns
+                })
         },
 
-        loadTableData (table) {
-            this.knex.from(table).then(data => {
-                this.tableData = data
-            })
-        }
+        loadTableData(table) {
+            this.knex
+                .withSchema(this.databaseActive)
+                .select('*')
+                .from(table)
+                .then(data => {
+                    this.tableData = data
+                })
+        },
+
+        submitRow(row) {
+            this.knex
+                .withSchema(this.databaseActive)
+                .from(this.tableActive)
+                .where(this.rowActive)
+                .update(this.rowForm)
+                .then(success => {
+                    Object.assign(this.rowActive, this.rowForm)
+
+                    this.setRowActive(null)
+                    this.$message({
+                        message: 'Row updated.',
+                        type: 'success',
+                    })
+                })
+                .catch(error => {
+                    this.setRowActive(null)
+                    this.$message({
+                        message: 'Something went wrong.',
+                        type: 'error',
+                    })
+                })
+        },
     },
 
     filters: {
-        str_limit (value) {
-            return (value && value.length > 100)
+        str_limit(value) {
+            return value && value.length > 100
                 ? value.substring(0, 100).trim() + '...'
                 : value
         },
     },
 
-    mounted () {
-        this.loadTables()
-    }
+    mounted() {
+        this.knex = Knex({
+            client: 'mysql',
+            connection: {
+                host: '127.0.0.1',
+                user: 'docker',
+                password: 'secret',
+                dateStrings: true,
+            },
+        })
+
+        this.loadDatabases()
+    },
 }
 </script>
 
@@ -165,8 +258,17 @@ body {
     overflow: hidden;
 }
 
+#menu, #content {
+    height: 100vh;
+    overflow: auto;
+}
+
 .el-table-wrapper {
     padding: 20px;
+}
+
+.el-select {
+    width: 100%;
 }
 
 .el-table {
