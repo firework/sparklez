@@ -5,7 +5,9 @@
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
     "prod": "cross-env NODE_ENV=production webpack --hide-modules",
-    "start": "electron ."
+    "start": "electron .",
+    "pack:osx": "electron-packager . \"Sparklez\" --out=pack --platform=darwin --arch=x64 --build-version=64-bit --overwrite",
+    "pack:linux": "electron-packager . \"Sparklez\" --out=pack --platform=linux --arch=x64 --build-version=64-bit --overwrite"
   },
   "dependencies": {
     "element-ui": "^1.2.9",
@@ -21,6 +23,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^4.0.0",
     "electron": "^1.6.6",
+    "electron-packager": "^8.6.0",
     "html-webpack-plugin": "^2.24.1",
     "laravel-mix": "^0.10.0",
     "webpack": "^2.4.1",
