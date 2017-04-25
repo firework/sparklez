@@ -36,6 +36,25 @@
             </el-col>
             <el-col :span="20">
                 <div class="el-table-wrapper" id="content">
+                    <el-button-group>
+                        <el-button
+                            type="primary"
+                            icon="plus"
+                            @click="createRow()"
+                        >Create</el-button>
+                        <el-button
+                            type="primary"
+                            icon="edit"
+                            :disabled="rowsSelected.length !== 1"
+                            @click="openRow(tableData[rowsSelected[0]])"
+                        >Edit</el-button>
+                        <el-button
+                            type="primary"
+                            icon="delete"
+                            :disabled="rowsSelected.length === 0"
+                            @click="deleteRows()"
+                        >Delete</el-button>
+                    </el-button-group>
                     <el-tabs>
                         <el-tab-pane>
                             <span slot="label"><i class="fa fa-table"></i> Content</span>
@@ -156,7 +175,7 @@ export default {
         tableFilter: '',
         rowActive: null,
         rowForm: null,
-        rowSelectTimeout: null,
+        rowType: 'update',
         rowsSelected: [],
         queryLog: [],
     }),
@@ -195,8 +214,9 @@ export default {
             }
         },
 
-        openRow(row) {
+        openRow(row, type = 'update') {
             this.setRowActive(row)
+            this.rowType = type
         },
 
         setRowActive(row) {
@@ -221,6 +241,8 @@ export default {
         },
 
         loadTables(database) {
+            database = database || this.databaseActive
+
             this.knex
                 .select('table_name')
                 .from('information_schema.tables')
@@ -228,13 +250,16 @@ export default {
                 .pluck('table_name')
                 .then(tables => {
                     this.tables = tables
-                    this.loadTable(tables[0])
+                    this.setTableActive(tables[0])
                 })
         },
 
         loadTable(table) {
+            table = table || this.tableActive
+
             this.loadTableColumns(table)
             this.loadTableData(table)
+            this.rowsSelected = []
         },
 
         loadTableColumns(table) {
@@ -252,29 +277,35 @@ export default {
         },
 
         loadTableData(table) {
-            this.knex
-                .withSchema(this.databaseActive)
+            this.prepareQuery(this.databaseActive, table)
                 .select('*')
-                .from(table)
                 .then(data => {
                     this.tableData = data
                 })
         },
 
         submitRow(row) {
-            this.knex
-                .withSchema(this.databaseActive)
-                .from(this.tableActive)
-                .where(this.rowActive)
-                .update(this.rowForm)
+            let query = this.prepareQuery()
+
+            if (this.rowType == 'update') {
+                query.where(this.rowActive).update(this.rowForm)
+            } else {
+                query.insert(this.rowForm)
+            }
+
+            query
                 .then(success => {
                     Object.assign(this.rowActive, this.rowForm)
 
                     this.setRowActive(null)
                     this.$message({
-                        message: 'Row updated.',
+                        message: `Row ${this.rowType}d.`,
                         type: 'success',
                     })
+
+                    if (this.rowType === 'create') {
+                        this.loadTable(this.tableActive)
+                    }
                 })
                 .catch(error => {
                     this.setRowActive(null)
@@ -282,7 +313,50 @@ export default {
                         message: 'Something went wrong.',
                         type: 'error',
                     })
+                    console.error(error)
                 })
+        },
+
+        createRow() {
+            let row = {}
+
+            this.tableColumns.forEach(column => {
+                row[column] = null
+            })
+
+            this.openRow(row, 'create')
+        },
+
+        deleteRows(rowsSelected) {
+            rowsSelected = rowsSelected || this.rowsSelected
+
+            rowsSelected.forEach(rowKey => {
+                let row = this.tableData[rowKey]
+
+                this.prepareQuery()
+                    .where(row)
+                    .delete()
+                    .then(result => {
+                        // nothing to do here
+                    })
+                    .catch(error => {
+                        console.error(error)
+                    })
+            })
+
+            this.$message({
+                message: `Rows deleted.`,
+                type: 'success',
+            })
+
+            this.loadTable(this.tableActive)
+        },
+
+        prepareQuery(database, table) {
+            database = database || this.databaseActive
+            table = table || this.tableActive
+
+            return this.knex.withSchema(database).from(table)
         },
     },
 
