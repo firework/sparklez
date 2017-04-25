@@ -136,10 +136,12 @@
 
 <script>
 import Knex from 'knex'
-import { clone as _clone } from 'lodash'
-import { without as _without } from 'lodash'
-import { isNumber as _isNumber } from 'lodash'
-import { isNull as _isNull } from 'lodash'
+import {
+    clone as _clone,
+    isNull as _isNull,
+    isNumber as _isNumber,
+    without as _without,
+} from 'lodash'
 
 export default {
     data: () => ({
@@ -311,14 +313,12 @@ export default {
 
             this.queryLog.unshift({
                 ranAt: new Date(),
-                sql: data.sql.replace(/\?/g, function(m, v) {
+                sql: data.sql.replace(/\?/g, () => {
                     let value = data.bindings[index++]
 
-                    if (_isNumber(value) || _isNull(value)) {
-                        return value
-                    }
-
-                    return `'${value}'`
+                    return _isNumber(value) || _isNull(value)
+                        ? value
+                        : `'${value}'`
                 }),
             })
         })
