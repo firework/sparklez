@@ -1,23 +1,25 @@
-let mix = require('laravel-mix');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { resolve } = require('path');
+let mix = require('laravel-mix')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const options = {
     postCss: [require('autoprefixer')],
     publicPath: 'dist',
-};
+    resourceRoot: `${__dirname}/dist/`,
+}
 const webpackConfig = {
     externals: {
-        'mysql': 'require("mysql")',
+        mysql: 'require("mysql")',
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: `${__dirname}/src/index.html`,
+            inject: false,
+        }),
+    ],
     resolve: {
         alias: {
-            '~': resolve(__dirname, 'src'),
+            '~': `${__dirname}/src`,
         },
     },
-    plugins: [new HtmlWebpackPlugin({
-        template: resolve(__dirname, 'src/index.html'),
-        inject: false,
-    })],
-};
+}
 
-mix.options(options).webpackConfig(webpackConfig).js('src/js/main.js', 'dist');
+mix.options(options).webpackConfig(webpackConfig).js('src/js/main.js', 'dist')

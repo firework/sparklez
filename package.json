@@ -8,21 +8,22 @@
     "start": "electron ."
   },
   "dependencies": {
-    "element-ui": "^1.2.7",
+    "element-ui": "^1.2.9",
     "font-awesome": "^4.7.0",
     "knex": "^0.12.9",
     "moment": "^2.18.1",
     "mysql": "^2.13.0",
-    "vue": "^2.2.6"
+    "vue": "^2.2.6",
+    "vue-highlightjs": "^1.2.2"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.24.0",
-    "babel-preset-stage-2": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^4.0.0",
-    "electron": "^1.6.2",
+    "electron": "^1.6.6",
     "html-webpack-plugin": "^2.24.1",
     "laravel-mix": "^0.10.0",
-    "webpack": "^2.3.3",
-    "webpack-dev-server": "^2.4.2"
+    "webpack": "^2.4.1",
+    "webpack-dev-server": "^2.4.4"
   }
 }

@@ -36,63 +36,99 @@
             </el-col>
             <el-col :span="20">
                 <div class="el-table-wrapper" id="content">
-                    <div class="el-table">
-                        <table cellspacing="0" cellpadding="0">
-                            <thead>
-                                <tr>
-                                    <th
-                                        v-for="column in tableColumns"
-                                        :key="column"
-                                    >
-                                        <div class="cell">{{ column }}</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="(row, key) in tableData"
-                                    :key="key"
-                                    @click="setRowActive(row)"
+                    <el-tabs>
+                        <el-tab-pane>
+                            <span slot="label"><i class="fa fa-table"></i> Content</span>
+
+                            <div class="el-table" id="table">
+                                <table class="el-table__body" cellspacing="0" cellpadding="0">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                v-for="column in tableColumns"
+                                                :key="column"
+                                            >
+                                                <div class="cell">{{ column }}</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="(row, key) in tableData"
+                                            :key="key"
+                                            :class="{'current-row': isRowSelected(key)}"
+                                            @dblclick="openRow(row)"
+                                            @click="toggleRow(key)"
+                                        >
+                                            <td
+                                                v-for="column in tableColumns"
+                                                :key="column"
+                                            >
+                                                <div class="cell">{{ row[column] | str_limit }}</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="el-table__empty-block"
+                                    v-if="tableData.length === 0"
                                 >
-                                    <td
-                                        v-for="column in tableColumns"
-                                        :key="column"
-                                    >
-                                        <div class="cell">{{ row[column] | str_limit }}</div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="el-table__empty-block"
-                            v-if="tableData.length === 0"
-                        >
-                            <span class="el-table__empty-text">No result</span>
-                        </div>
-                    </div>
-                    <el-dialog
-                        v-model="hasRowActive"
-                        title="Edit Row"
-                        @close="setRowActive(null)"
-                    >
-                        <el-form
-                            v-if="hasRowActive"
-                            :model="rowForm"
-                        >
-                            <el-form-item
-                                v-for="column in tableColumns"
-                                :key="column"
-                                :label="column">
-                                <el-input
-                                    v-model="rowForm[column]"
-                                ></el-input>
-                            </el-form-item>
-                        </el-form>
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="setRowActive(null)">Cancel</el-button>
-                            <el-button type="primary" @click="submitRow(rowActive)">Confirm</el-button>
-                        </div>
-                    </el-dialog>
+                                    <span class="el-table__empty-text">No result</span>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane>
+                            <span slot="label"><i class="fa fa-list"></i> Query Log</span>
+                            <div class="el-table" id="query-log">
+                                <table class="el-table__body" cellspacing="0" cellpadding="0">
+                                    <thead>
+                                        <tr>
+                                            <th><div>Ran At</div></th>
+                                            <th><div>Query</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="(query, key) in queryLog"
+                                            :key="key"
+                                        >
+                                            <td>
+                                                <div class="cell">{{ query.ranAt.toLocaleString() }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="cell">
+                                                    <pre v-highlightjs="query.sql"><code class="sql"></code></pre>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </div>
+                <el-dialog
+                    v-model="hasRowActive"
+                    title="Edit Row"
+                    @close="setRowActive(null)"
+                >
+                    <el-form
+                        v-if="hasRowActive"
+                        :model="rowForm"
+                    >
+                        <el-form-item
+                            v-for="column in tableColumns"
+                            :key="column"
+                            :label="column">
+                            <el-input
+                                v-model="rowForm[column]"
+                            ></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="setRowActive(null)">Cancel</el-button>
+                        <el-button type="primary" @click="submitRow(rowActive)">Confirm</el-button>
+                    </div>
+                </el-dialog>
             </el-col>
         </el-row>
     </div>
@@ -101,6 +137,9 @@
 <script>
 import Knex from 'knex'
 import { clone as _clone } from 'lodash'
+import { without as _without } from 'lodash'
+import { isNumber as _isNumber } from 'lodash'
+import { isNull as _isNull } from 'lodash'
 
 export default {
     data: () => ({
@@ -115,6 +154,9 @@ export default {
         tableFilter: '',
         rowActive: null,
         rowForm: null,
+        rowSelectTimeout: null,
+        rowsSelected: [],
+        queryLog: [],
     }),
 
     computed: {
@@ -143,9 +185,25 @@ export default {
             this.databaseActive = database
         },
 
+        toggleRow(rowKey) {
+            if (this.isRowSelected(rowKey)) {
+                this.rowsSelected = _without(this.rowsSelected, rowKey)
+            } else {
+                this.rowsSelected.push(rowKey)
+            }
+        },
+
+        openRow(row) {
+            this.setRowActive(row)
+        },
+
         setRowActive(row) {
             this.rowActive = row
             this.rowForm = _clone(row)
+        },
+
+        isRowSelected(key) {
+            return this.rowsSelected.includes(key)
         },
 
         loadDatabases() {
@@ -245,12 +303,36 @@ export default {
             },
         })
 
+        this.knex.on('query', data => {
+            // pluck are the internal queries to get databases, tables and columns
+            if (data.method === 'pluck') return
+
+            let index = 0
+
+            this.queryLog.unshift({
+                ranAt: new Date(),
+                sql: data.sql.replace(/\?/g, function(m, v) {
+                    let value = data.bindings[index++]
+
+                    if (_isNumber(value) || _isNull(value)) {
+                        return value
+                    }
+
+                    return `'${value}'`
+                }),
+            })
+        })
+
         this.loadDatabases()
     },
 }
 </script>
 
 <style>
+@import 'https://fonts.googleapis.com/css?family=Roboto:100,400,400i,700';
+@import '~font-awesome/css/font-awesome.css';
+@import '~highlight.js/styles/github.css';
+
 body {
     font-family: Roboto, sans-serif;
     margin: 0;
