@@ -1,6 +1,27 @@
 <template>
     <div id="app">
-        <el-row>
+        <div v-if="!connection.active">
+            <el-form :model="connection" label-width="120px">
+                <el-form-item label="Host">
+                    <el-input v-model="connection.host"></el-input>
+                </el-form-item>
+                <el-form-item label="User">
+                    <el-input v-model="connection.user"></el-input>
+                </el-form-item>
+                <el-form-item label="Password">
+                    <el-input v-model="connection.password"></el-input>
+                </el-form-item>
+                <el-form-item label="Database">
+                    <el-input v-model="connection.database"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="connect()">
+                        Connect
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+        <el-row v-else>
             <el-col :span="4">
                 <el-menu id="menu"
                     @select="setTableActive"
@@ -159,15 +180,23 @@ import {
     clone as _clone,
     isNull as _isNull,
     isNumber as _isNumber,
+    omit as _omit,
     without as _without,
 } from 'lodash'
 
 export default {
     data: () => ({
+        connection: {
+            host: '127.0.0.1',
+            user: 'docker',
+            password: 'secret',
+            database: 'docker',
+            dateStrings: true,
+            active: false,
+        },
         knex: null,
         databases: [],
         databaseActive: null,
-        databaseDefault: 'docker',
         tables: [],
         tableActive: null,
         tableColumns: [],
@@ -195,6 +224,35 @@ export default {
     },
 
     methods: {
+        connect() {
+            this.knex = Knex({
+                client: 'mysql',
+                connection: _.omit(this.connection, 'databsase', 'active'),
+            })
+
+            this.connection.active = true
+
+            this.knex.on('query', data => {
+                // pluck are the internal queries to get databases, tables and columns
+                if (data.method === 'pluck') return
+
+                let index = 0
+
+                this.queryLog.unshift({
+                    ranAt: new Date(),
+                    sql: data.sql.replace(/\?/g, () => {
+                        let value = data.bindings[index++]
+
+                        return _isNumber(value) || _isNull(value)
+                            ? value
+                            : `'${value}'`
+                    }),
+                })
+            })
+
+            this.loadDatabases()
+        },
+
         setTableActive(table) {
             if (table === this.tableActive) return
 
@@ -236,7 +294,7 @@ export default {
                 .pluck('table_schema')
                 .then(databases => {
                     this.databases = databases
-                    this.setDatabaseActive(this.databaseDefault)
+                    this.setDatabaseActive(this.connection.database)
                 })
         },
 
@@ -366,38 +424,6 @@ export default {
                 ? value.substring(0, 100).trim() + '...'
                 : value
         },
-    },
-
-    mounted() {
-        this.knex = Knex({
-            client: 'mysql',
-            connection: {
-                host: '127.0.0.1',
-                user: 'docker',
-                password: 'secret',
-                dateStrings: true,
-            },
-        })
-
-        this.knex.on('query', data => {
-            // pluck are the internal queries to get databases, tables and columns
-            if (data.method === 'pluck') return
-
-            let index = 0
-
-            this.queryLog.unshift({
-                ranAt: new Date(),
-                sql: data.sql.replace(/\?/g, () => {
-                    let value = data.bindings[index++]
-
-                    return _isNumber(value) || _isNull(value)
-                        ? value
-                        : `'${value}'`
-                }),
-            })
-        })
-
-        this.loadDatabases()
     },
 }
 </script>

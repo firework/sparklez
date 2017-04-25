@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const options = {
     postCss: [require('autoprefixer')],
     publicPath: 'dist',
-    resourceRoot: `${__dirname}/dist/`,
+    resourceRoot: '',
 }
 const webpackConfig = {
     externals: {
@@ -22,4 +22,9 @@ const webpackConfig = {
     },
 }
 
-mix.options(options).webpackConfig(webpackConfig).js('src/js/main.js', 'dist')
+mix
+    .options(options)
+    .webpackConfig(webpackConfig)
+    .copy('src/electron.js', 'dist')
+    .copy('src/package.json', 'dist')
+    .js('src/js/main.js', 'dist')

@@ -1,0 +1,11 @@
+{
+  "name": "Sparklez",
+  "description": "Database Tool",
+  "author": "Firework Web e Mobile <contact@fireworkweb.com>",
+  "email": "opensource@fireworkweb.com",
+  "version": "0.0.1",
+  "main": "electron.js",
+  "dependencies": {
+    "mysql": "^2.13.0"
+  }
+}

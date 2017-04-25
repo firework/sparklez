@@ -3,6 +3,23 @@ let glob = require('glob');
 let webpack = require('webpack');
 let Mix = require('laravel-mix').config;
 let webpackPlugins = require('laravel-mix').plugins;
+let dotenv = require('dotenv')
+
+/*
+ |--------------------------------------------------------------------------
+ | Load Environment Variables
+ |--------------------------------------------------------------------------
+ |
+ | Load environment variables from .env file. dotenv will never modify
+ | any environment variables that have already been set.
+ |
+ */
+
+dotenv.config({
+    path: Mix.Paths.root('.env')
+});
+
+
 
 /*
  |--------------------------------------------------------------------------
@@ -98,6 +115,10 @@ let rules = [
                     use: 'css-loader!sass-loader?indentedSyntax',
                     fallback: 'vue-style-loader'
                 }),
+                less: vueExtractTextPlugin.extract({
+                    use: 'css-loader!less-loader',
+                    fallback: 'vue-style-loader'
+                }),
                 stylus: vueExtractTextPlugin.extract({
                     use: 'css-loader!stylus-loader?paths[]=node_modules',
                     fallback: 'vue-style-loader'
@@ -110,10 +131,15 @@ let rules = [
                 js: 'babel-loader' + Mix.babelConfig(),
                 scss: 'vue-style-loader!css-loader!sass-loader',
                 sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+                less: 'vue-style-loader!css-loader!less-loader',
                 stylus: 'vue-style-loader!css-loader!stylus-loader?paths[]=node_modules'
             },
 
-            postcss: Mix.options.postCss
+            postcss: Mix.options.postCss,
+
+            preLoaders: Mix.options.vue.preLoaders,
+
+            postLoaders: Mix.options.vue.postLoaders
         }
     },
 
@@ -126,12 +152,6 @@ let rules = [
     {
         test: /\.css$/,
         loaders: ['style-loader', 'css-loader']
-    },
-
-    {
-        test: /\.s[ac]ss$/,
-        include: /node_modules/,
-        loaders: ['style-loader', 'css-loader', 'sass-loader']
     },
 
     {
@@ -191,6 +211,17 @@ let rules = [
         }
     }
 ];
+
+let sassRule = {
+    test: /\.s[ac]ss$/,
+    loaders: ['style-loader', 'css-loader', 'sass-loader']
+};
+
+if (Mix.preprocessors) {
+    sassRule.exclude = Mix.preprocessors.map(preprocessor => preprocessor.test());
+}
+
+rules.push(sassRule);
 
 if (Mix.preprocessors) {
     Mix.preprocessors.forEach(preprocessor => {
@@ -346,12 +377,8 @@ if (Mix.options.notifications) {
     );
 }
 
-if (Mix.copy) {
-    Mix.copy.forEach(copy => {
-        plugins.push(
-            new webpackPlugins.CopyWebpackPlugin([copy])
-        );
-    });
+if (Mix.copy.length) {
+    new webpackPlugins.CopyWebpackPlugin(Mix.copy);
 }
 
 if (Mix.entry().hasExtractions()) {
@@ -385,23 +412,21 @@ if (Mix.options.purifyCss) {
     ));
 }
 
-if (Mix.inProduction) {
+if (Mix.inProduction && Mix.options.uglify) {
     plugins.push(
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
-        })
+        new webpack.optimize.UglifyJsPlugin(Mix.options.uglify)
     );
-
-    if (Mix.options.uglify) {
-        plugins.push(
-            new webpack.optimize.UglifyJsPlugin(Mix.options.uglify)
-        );
-    }
 }
 
 plugins.push(
+    new webpack.DefinePlugin(
+        Mix.definitions({
+            NODE_ENV: Mix.inProduction
+                ? 'production'
+                : ( process.env.NODE_ENV || 'development' )
+        })
+    ),
+
     new webpackPlugins.WebpackOnBuildPlugin(
         stats => global.events.fire('build', stats)
     )

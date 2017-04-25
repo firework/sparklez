@@ -1,28 +1,56 @@
 {
-  "name": "sparklez",
-  "main": "src/electron.js",
+  "name": "Sparklez",
+  "description": "Database Tool",
+  "author": "Firework Web e Mobile <contact@fireworkweb.com>",
+  "main": "dist/electron.js",
+  "version": "0.0.1",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
     "prod": "cross-env NODE_ENV=production webpack --hide-modules",
     "start": "electron .",
-    "pack:osx": "electron-packager . \"Sparklez\" --out=pack --platform=darwin --arch=x64 --build-version=64-bit --overwrite",
-    "pack:linux": "electron-packager . \"Sparklez\" --out=pack --platform=linux --arch=x64 --build-version=64-bit --overwrite"
+    "pack:osx": "yarn pack:osx && yarn pack:linux",
+    "pack:osx": "electron-packager dist \"Sparklez\" --version-string.CompanyName=\"Firework Web e Mobile\" --version-string.ProductName=\"Sparklez\" --out=build --platform=darwin --arch=x64 --build-version=64-bit --icon=src/assets/installer/icon.icns --prune --asar --overwrite",
+    "pack:linux": "electron-packager dist \"Sparklez\" --version-string.CompanyName=\"Firework Web e Mobile\" --version-string.ProductName=\"Sparklez\" --out=build --platform=linux --arch=x64 --build-version=64-bit --icon=src/assets/installer/icon.ico --prune --asar --overwrite",
+    "build": "yarn build:osx && yarn build:linux",
+    "build:osx": "build --mac --x64",
+    "build:linux": "build --linux --x64",
+    "pack:build": "yarn pack && yarn build",
+    "pack:build:osx": "yarn pack:osx && yarn build:osx",
+    "pack:build:linux": "yarn pack:linux && yarn build:linux"
+  },
+  "build": {
+      "productName": "Sparklez",
+      "appId": "com.fireworkweb.sparklez",
+      "mac": {
+          "category": "public.app-category.developer-tools",
+          "target": ["default"]
+      },
+      "linux": {
+          "category": "Development",
+          "target": ["deb"]
+      },
+      "directories": {
+          "buildResources": "src/assets/installer",
+          "output": "build",
+          "app": "dist"
+      }
   },
   "dependencies": {
     "element-ui": "^1.2.9",
     "font-awesome": "^4.7.0",
+    "highlight.js": "^9.11.0",
     "knex": "^0.12.9",
     "moment": "^2.18.1",
     "mysql": "^2.13.0",
-    "vue": "^2.2.6",
-    "vue-highlightjs": "^1.2.2"
+    "vue": "^2.2.6"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^4.0.0",
     "electron": "^1.6.6",
+    "electron-builder": "^17.1.1",
     "electron-packager": "^8.6.0",
     "html-webpack-plugin": "^2.24.1",
     "laravel-mix": "^0.11.3",
