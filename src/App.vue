@@ -76,6 +76,10 @@
                             @click="deleteRows()"
                         >Delete</el-button>
                     </el-button-group>
+                    <el-button
+                        type="warning"
+                        @click="disconnect()"
+                    >Disconnect</el-button>
                     <el-tabs>
                         <el-tab-pane>
                             <span slot="label"><i class="fa fa-table"></i> Content</span>
@@ -113,6 +117,57 @@
                                     v-if="tableData.length === 0"
                                 >
                                     <span class="el-table__empty-text">No result</span>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane>
+                            <span slot="label"><i class="fa fa-terminal"></i> Query</span>
+                            <div id="query">
+                                <el-input
+                                    type="textarea"
+                                    :autosize="{ minRows: 10 }"
+                                    placeholder="Execute Query"
+                                    v-model="query"
+                                ></el-input>
+                                <br>
+                                <br>
+                                <el-button
+                                    type="primary"
+                                    @click="executeQuery()"
+                                >Execure Query</el-button>
+                                <br>
+                                <br>
+                                <div class="el-table">
+                                    <table class="el-table__body" cellspacing="0" cellpadding="0">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    v-for="column in queryColumns"
+                                                    :key="column"
+                                                >
+                                                    <div class="cell">{{ column }}</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                v-for="(row, key) in queryData"
+                                                :key="key"
+                                            >
+                                                <td
+                                                    v-for="column in queryColumns"
+                                                    :key="column"
+                                                >
+                                                    <div class="cell">{{ row[column] | str_limit }}</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="el-table__empty-block"
+                                        v-if="queryData.length === 0"
+                                    >
+                                        <span class="el-table__empty-text">No result</span>
+                                    </div>
                                 </div>
                             </div>
                         </el-tab-pane>
@@ -195,6 +250,9 @@ export default {
             active: false,
         },
         knex: null,
+        query: null,
+        queryColumns: [],
+        queryData: [],
         databases: [],
         databaseActive: null,
         tables: [],
@@ -251,6 +309,35 @@ export default {
             })
 
             this.loadDatabases()
+        },
+
+        disconnect() {
+            this.knex = null
+            this.connection.active = false
+        },
+
+        executeQuery() {
+            this.knex
+                .raw(this.query)
+                .then(result => {
+                    // MySQL resturns and array and the first key has the result
+                    result = result[0]
+
+                    if (result.length) {
+                        this.queryColumns = Object.keys(result[0])
+                        this.queryData = result
+                    } else {
+                        this.queryColumns = []
+                        this.queryData = []
+                    }
+                })
+                .catch(error => {
+                    this.$message({
+                        message: 'Something went wrong.',
+                        type: 'error',
+                    })
+                    console.error(error)
+                })
         },
 
         setTableActive(table) {
@@ -471,5 +558,9 @@ body {
 
 .el-table th > .cell {
     white-space: nowrap;
+}
+
+.el-table td > .cell {
+    word-break: normal;
 }
 </style>
