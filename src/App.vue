@@ -201,7 +201,7 @@
                                     </el-form-item>
 
                                     <el-form-item>
-                                        <el-button type="primary" @click="executeQuery()">Execure Query</el-button>
+                                        <el-button type="primary" @click="executeQuery()">Execute Query</el-button>
                                     </el-form-item>
                                 </el-form>
 
@@ -487,7 +487,6 @@ export default {
 
         resetData() {
             this.paginateNumber = 50
-            this.paginatePage   = 1
             this.paginatePage   = 1
             this.tableActive    = null
             this.databaseActive = null
