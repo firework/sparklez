@@ -128,6 +128,15 @@
                         >Delete</el-button>
                     </el-button-group>
 
+                    <el-input
+                        type="number"
+                        class="paginate"
+                        placeholder="Paginate"
+                        v-model="paginateNumber"
+                    ></el-input>
+
+                    <el-button type="info" @click="loadTable()"><i class="fa fa-fw fa-refresh"></i> Refresh</el-button>
+
                     <el-button type="warning" @click="disconnect()"><i class="fa fa-fw fa-power-off"></i> Disconnect</el-button>
 
                     <!-- hue --> <br><br>
@@ -136,35 +145,52 @@
                         <el-tab-pane>
                             <span slot="label"><i class="fa fa-fw fa-table"></i> Content</span>
 
-                            <div class="el-table">
-                                <table class="el-table__body" cellspacing="0" cellpadding="0">
-                                    <thead>
-                                        <tr>
-                                            <th v-for="column in tableColumns" :key="column">
-                                                <div class="cell" v-text="column"></div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            v-for="(row, key) in tableData"
-                                            :key="key"
-                                            :class="{'current-row': isRowSelected(key)}"
-                                            @dblclick="openRow(row)"
-                                            @click="toggleRow(key)"
-                                        >
-                                            <td
-                                                v-for="column in tableColumns"
-                                                :key="column"
+                            <div id="table-content">
+                                <el-pagination
+                                    layout="total, prev, pager, next, jumper"
+                                    :page-size="+paginateNumber"
+                                    :total="tableCount"
+                                    @current-change="paginateChange($event)"
+                                ></el-pagination>
+                                <br>
+                                <div class="el-table">
+                                    <table class="el-table__body" cellspacing="0" cellpadding="0">
+                                        <thead>
+                                            <tr>
+                                                <th v-for="column in tableColumns" :key="column">
+                                                    <div class="cell" v-text="column"></div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                v-for="(row, key) in tableData"
+                                                :key="key"
+                                                :class="{'current-row': isRowSelected(key)}"
+                                                @dblclick="openRow(row)"
+                                                @click="toggleRow(key)"
                                             >
-                                                <div class="cell">{{ row[column] | str_limit }}</div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="el-table__empty-block" v-if="tableData.length === 0">
-                                    <span class="el-table__empty-text">No result</span>
+                                                <td
+                                                    v-for="column in tableColumns"
+                                                    :key="column"
+                                                >
+                                                    <div class="cell">{{ row[column] | str_limit }}</div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="el-table__empty-block" v-if="tableData.length === 0">
+                                        <span class="el-table__empty-text">No result</span>
+                                    </div>
                                 </div>
+                                <br>
+                                <el-pagination
+                                    layout="total, prev, pager, next, jumper"
+                                    :page-size="+paginateNumber"
+                                    :total="tableCount"
+                                    @current-change="paginateChange($event)"
+                                ></el-pagination>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane>
@@ -300,6 +326,8 @@ export default {
             active: false,
             tested: false,
         },
+        paginateNumber: 100,
+        paginatePage: 1,
         favorites: [],
         knex: null,
         query: null,
@@ -309,6 +337,7 @@ export default {
         databaseActive: null,
         tables: [],
         tableActive: null,
+        tableCount: 0,
         tableColumns: [],
         tableData: [],
         tableFilter: '',
@@ -333,11 +362,13 @@ export default {
         },
 
         hasConnectionData() {
-            return !! this.connection.name &&
-                !! this.connection.host &&
-                !! this.connection.user &&
-                !! this.connection.password &&
-                !! this.connection.database
+            return (
+                !!this.connection.name &&
+                !!this.connection.host &&
+                !!this.connection.user &&
+                !!this.connection.password &&
+                !!this.connection.database
+            )
         },
     },
 
@@ -383,7 +414,9 @@ export default {
         },
 
         saveAsFavorite() {
-            this.favorites.push(_.omit(this.connection, 'dateStrings', 'active', 'tested'))
+            this.favorites.push(
+                _.omit(this.connection, 'dateStrings', 'active', 'tested')
+            )
             this.successMessage('Connection added on favorites.')
         },
 
@@ -409,7 +442,8 @@ export default {
         testConnection() {
             let knex = this.getKnex()
 
-            knex.raw('select 1+1 as result')
+            knex
+                .raw('select 1+1 as result')
                 .then(() => {
                     this.connection.tested = true
                     this.knex = knex
@@ -534,9 +568,21 @@ export default {
         loadTable(table) {
             table = table || this.tableActive
 
+            this.rowsSelected = []
+
+            this.loadTableCount(table)
             this.loadTableColumns(table)
             this.loadTableData(table)
-            this.rowsSelected = []
+        },
+
+        loadTableCount(table) {
+            this.prepareQuery(this.databaseActive, table)
+                .count()
+                .then(result => {
+                    result = result[0]
+
+                    this.tableCount = result['count(*)']
+                })
         },
 
         loadTableColumns(table) {
@@ -556,6 +602,8 @@ export default {
         loadTableData(table) {
             this.prepareQuery(this.databaseActive, table)
                 .select('*')
+                .limit(this.paginateNumber)
+                .offset(this.paginateNumber * (this.paginatePage - 1))
                 .then(data => {
                     this.tableData = data
                 })
@@ -622,6 +670,11 @@ export default {
             table = table || this.tableActive
 
             return this.knex.withSchema(database).from(table)
+        },
+
+        paginateChange(page) {
+            this.paginatePage = page
+            this.loadTable()
         },
     },
 
@@ -703,5 +756,9 @@ body {
 
 .el-table td > .cell {
     word-break: normal;
+}
+
+.paginate {
+    width: auto !important;
 }
 </style>
