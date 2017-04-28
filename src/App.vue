@@ -371,31 +371,31 @@ export default {
         },
 
         successMessage(message = 'No message') {
-            this.rawMessage(message, 'success');
+            this.rawMessage(message, 'success')
         },
 
         warningMessage(message = 'No message') {
-            this.rawMessage(message, 'warning');
+            this.rawMessage(message, 'warning')
         },
 
         errorMessage(message = 'No message') {
-            this.rawMessage(message, 'error');
+            this.rawMessage(message, 'error')
         },
 
         saveAsFavorite() {
-            this.favorites.push(_.omit(this.connection, 'dateStrings', 'active', 'tested'));
-            this.successMessage('Connection added on favorites.');
+            this.favorites.push(_.omit(this.connection, 'dateStrings', 'active', 'tested'))
+            this.successMessage('Connection added on favorites.')
         },
 
         // @TODO: check connection.favorite === true to disable favorite button
         setFavorite(favorite) {
             for (let key in favorite) {
-                this.connection[key] = favorite[key];
+                this.connection[key] = favorite[key]
             }
         },
 
         removeFavorite(key) {
-            this.favorites.splice(key, 1);
+            this.favorites.splice(key, 1)
         },
 
         getKnex() {
@@ -413,12 +413,12 @@ export default {
                 .then(() => {
                     this.connection.tested = true
                     this.knex = knex
-                    this.successMessage('Connection accepted.');
+                    this.successMessage('Connection accepted.')
                 })
                 .catch(error => {
                     this.connection.tested = false
-                    this.errorMessage('Connection refused.');
-                    console.error(error);
+                    this.errorMessage('Connection refused.')
+                    console.error(error)
                 })
         },
 
@@ -467,7 +467,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    this.errorMessage('Something went wrong.');
+                    this.errorMessage('Something went wrong.')
                     console.error(error)
                 })
         },
@@ -573,7 +573,7 @@ export default {
                     Object.assign(this.rowActive, this.rowForm)
 
                     this.setRowActive(null)
-                    this.successMessage(`Row ${this.rowType}d.`);
+                    this.successMessage(`Row ${this.rowType}d.`)
 
                     if (this.rowType === 'create') {
                         this.loadTable(this.tableActive)
@@ -581,7 +581,7 @@ export default {
                 })
                 .catch(error => {
                     this.setRowActive(null)
-                    this.errorMessage('Something went wrong.');
+                    this.errorMessage('Something went wrong.')
                     console.error(error)
                 })
         },
@@ -613,7 +613,7 @@ export default {
                     })
             })
 
-            this.successMessage('Row(s) deleted.');
+            this.successMessage('Row(s) deleted.')
             this.loadTable(this.tableActive)
         },
 
