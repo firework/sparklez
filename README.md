@@ -1,9 +1,9 @@
 ![Sparklez](http://sparklez.fireworkweb.com/img/sparklez-logo-horizontal.png)
 
-A straight forward database management tool.
+A straight forward database management tool. [Go to Release Page to download.](https://github.com/firework/sparklez/releases)
 
 
-### Techinologies
+### Technologies
 
 * Electron
 * NodeJS
