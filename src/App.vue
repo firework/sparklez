@@ -42,6 +42,12 @@
                         </el-form-item>
 
                         <el-form-item>
+                            <el-input placeholder="3306" v-model="connection.port">
+                                <template slot="prepend"><i class="fa fa-fw fa-random"></i> Port</template>
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
                             <el-input placeholder="root" v-model="connection.user">
                                 <template slot="prepend"><i class="fa fa-fw fa-user"></i> User</template>
                             </el-input>
@@ -319,6 +325,7 @@ export default {
         connection: {
             name: '',
             host: '',
+            port: '',
             user: '',
             password: '',
             database: '',
@@ -365,6 +372,7 @@ export default {
             return (
                 !!this.connection.name &&
                 !!this.connection.host &&
+                !!this.connection.port &&
                 !!this.connection.user &&
                 !!this.connection.password &&
                 !!this.connection.database
@@ -694,6 +702,7 @@ export default {
             favorites.unshift({
                 name: 'docker',
                 host: '127.0.0.1',
+                port: '3306',
                 user: 'docker',
                 password: 'secret',
                 database: 'docker',
