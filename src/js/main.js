@@ -1,8 +1,12 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import highlightjs from 'highlight.js'
-import 'element-ui/lib/theme-default/index.css'
 import App from '~/App.vue'
+
+// styles
+import 'element-ui/lib/theme-default/index.css'
+import 'font-awesome/css/font-awesome.css'
+import 'highlight.js/styles/github.css'
 
 Vue.use(ElementUI)
 

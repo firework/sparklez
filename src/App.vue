@@ -1,31 +1,79 @@
 <template>
     <div id="app">
         <div v-if="!connection.active">
-            <el-form :model="connection" label-width="120px">
-                <el-form-item label="Host">
-                    <el-input v-model="connection.host"></el-input>
-                </el-form-item>
-                <el-form-item label="User">
-                    <el-input v-model="connection.user"></el-input>
-                </el-form-item>
-                <el-form-item label="Password">
-                    <el-input v-model="connection.password"></el-input>
-                </el-form-item>
-                <el-form-item label="Database">
-                    <el-input v-model="connection.database"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="connect()">
-                        Connect
-                    </el-button>
-                </el-form-item>
-            </el-form>
+            <el-row :gutter="20">
+                <el-col :sm="6" :lg="4">
+                    <div class="sidebar">
+                        <el-menu mode="vertical">
+                            <el-menu-item
+                                v-for="(favorite, key) in favorites"
+                                :key="key"
+                                :index="key + ''"
+                                @click="setFavorite(favorite)"
+                            >
+                                <i class="fa fa-fw fa-database"></i>
+                                <span v-text="favorite.name"></span>
+                                <i class="fa fa-fw fa-times" @click.stop="removeFavorite(key)"></i>
+                            </el-menu-item>
+
+                            <!-- @TODO: folder feature -->
+                            <!-- <el-submenu index="2">
+                                <template slot="title"><i class="fa fa-fw fa-folder"></i> Development</template>
+                                <el-menu-item index="2-1"><i class="fa fa-fw fa-database"></i> localhost</el-menu-item>
+                            </el-submenu> -->
+                        </el-menu>
+                    </div>
+                </el-col>
+
+                <el-col :sm="{span: 12, offset: 3}" :lg="{span: 10, offset: 5}">
+                    <h2>Connection</h2>
+
+                    <el-form :model="connection">
+                        <el-form-item>
+                            <el-input placeholder="localhost" v-model="connection.name">
+                                <template slot="prepend"><i class="fa fa-fw fa-tag"></i> Name</template>
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-input placeholder="127.0.0.1" v-model="connection.host">
+                                <template slot="prepend"><i class="fa fa-fw fa-server"></i> Host</template>
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-input placeholder="root" v-model="connection.user">
+                                <template slot="prepend"><i class="fa fa-fw fa-user"></i> User</template>
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-input placeholder="secret" v-model="connection.password">
+                                <template slot="prepend"><i class="fa fa-fw fa-lock"></i> Password</template>
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-input placeholder="development" v-model="connection.database">
+                                <template slot="prepend"><i class="fa fa-fw fa-database"></i> Database</template>
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button-group>
+                                <el-button type="primary" @click="saveAsFavorite()" :disabled="!connection.tested"><i class="fa fa-fw fa-star"></i> Save as favorite</el-button>
+                                <el-button type="primary" @click="testConnection()" :disabled="!hasConnectionData"><i class="fa fa-fw fa-bolt"></i> Test connection</el-button>
+                                <el-button type="primary" @click="connect()" :disabled="!connection.tested"><i class="fa fa-fw fa-plug"></i> Connect</el-button>
+                            </el-button-group>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+            </el-row>
         </div>
+
         <el-row v-else>
             <el-col :span="4">
-                <el-menu id="menu"
-                    @select="setTableActive"
-                >
+                <el-menu class="has-full-height" @select="setTableActive">
                     <li class="el-menu-item">
                         <el-select
                             v-model="databaseActive"
@@ -55,20 +103,23 @@
                     ></el-menu-item>
                 </el-menu>
             </el-col>
+
             <el-col :span="20">
-                <div class="el-table-wrapper" id="content">
+                <div class="content">
                     <el-button-group>
                         <el-button
                             type="primary"
                             icon="plus"
                             @click="createRow()"
                         >Create</el-button>
+
                         <el-button
                             type="primary"
                             icon="edit"
                             :disabled="rowsSelected.length !== 1"
                             @click="openRow(tableData[rowsSelected[0]])"
                         >Edit</el-button>
+
                         <el-button
                             type="primary"
                             icon="delete"
@@ -76,23 +127,21 @@
                             @click="deleteRows()"
                         >Delete</el-button>
                     </el-button-group>
-                    <el-button
-                        type="warning"
-                        @click="disconnect()"
-                    >Disconnect</el-button>
+
+                    <el-button type="warning" @click="disconnect()"><i class="fa fa-fw fa-power-off"></i> Disconnect</el-button>
+
+                    <!-- hue --> <br><br>
+
                     <el-tabs>
                         <el-tab-pane>
-                            <span slot="label"><i class="fa fa-table"></i> Content</span>
+                            <span slot="label"><i class="fa fa-fw fa-table"></i> Content</span>
 
-                            <div class="el-table" id="table">
+                            <div class="el-table">
                                 <table class="el-table__body" cellspacing="0" cellpadding="0">
                                     <thead>
                                         <tr>
-                                            <th
-                                                v-for="column in tableColumns"
-                                                :key="column"
-                                            >
-                                                <div class="cell">{{ column }}</div>
+                                            <th v-for="column in tableColumns" :key="column">
+                                                <div class="cell" v-text="column"></div>
                                             </th>
                                         </tr>
                                     </thead>
@@ -113,30 +162,29 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div class="el-table__empty-block"
-                                    v-if="tableData.length === 0"
-                                >
+                                <div class="el-table__empty-block" v-if="tableData.length === 0">
                                     <span class="el-table__empty-text">No result</span>
                                 </div>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane>
-                            <span slot="label"><i class="fa fa-terminal"></i> Query</span>
+                            <span slot="label"><i class="fa fa-fw fa-terminal"></i> Query</span>
                             <div id="query">
-                                <el-input
-                                    type="textarea"
-                                    :autosize="{ minRows: 10 }"
-                                    placeholder="Execute Query"
-                                    v-model="query"
-                                ></el-input>
-                                <br>
-                                <br>
-                                <el-button
-                                    type="primary"
-                                    @click="executeQuery()"
-                                >Execure Query</el-button>
-                                <br>
-                                <br>
+                                <el-form>
+                                    <el-form-item>
+                                        <el-input
+                                            type="textarea"
+                                            :autosize="{ minRows: 10 }"
+                                            placeholder="Execute Query"
+                                            v-model="query"
+                                        ></el-input>
+                                    </el-form-item>
+
+                                    <el-form-item>
+                                        <el-button type="primary" @click="executeQuery()">Execure Query</el-button>
+                                    </el-form-item>
+                                </el-form>
+
                                 <div class="el-table">
                                     <table class="el-table__body" cellspacing="0" cellpadding="0">
                                         <thead>
@@ -170,9 +218,10 @@
                                     </div>
                                 </div>
                             </div>
+
                         </el-tab-pane>
                         <el-tab-pane>
-                            <span slot="label"><i class="fa fa-list"></i> Query Log</span>
+                            <span slot="label"><i class="fa fa-fw fa-list"></i> Query Log</span>
                             <div class="el-table" id="query-log">
                                 <table class="el-table__body" cellspacing="0" cellpadding="0">
                                     <thead>
@@ -242,13 +291,16 @@ import {
 export default {
     data: () => ({
         connection: {
-            host: '127.0.0.1',
-            user: 'docker',
-            password: 'secret',
-            database: 'docker',
+            name: '',
+            host: '',
+            user: '',
+            password: '',
+            database: '',
             dateStrings: true,
             active: false,
+            tested: false,
         },
+        favorites: [],
         knex: null,
         query: null,
         queryColumns: [],
@@ -279,15 +331,98 @@ export default {
         hasRowActive() {
             return !!this.rowActive
         },
+
+        hasConnectionData() {
+            return !! this.connection.name &&
+                !! this.connection.host &&
+                !! this.connection.user &&
+                !! this.connection.password &&
+                !! this.connection.database
+        },
+    },
+
+    watch: {
+        // TODO: reactivity problem
+        // connection: {
+        //     handler(connection) {
+        //         this.knex = null
+        //         connection.tested = false
+        //
+        //         return connection
+        //     },
+        //     deep: true,
+        // },
+
+        favorites(favorites) {
+            localStorage.setItem('favorites', JSON.stringify(favorites))
+
+            return favorites
+        },
     },
 
     methods: {
-        connect() {
-            this.knex = Knex({
-                client: 'mysql',
-                connection: _.omit(this.connection, 'databsase', 'active'),
+        // TODO: put on global functions
+        rawMessage(message, type) {
+            this.$message({
+                showClose: true,
+                message,
+                type,
             })
+        },
 
+        successMessage(message = 'No message') {
+            this.rawMessage(message, 'success');
+        },
+
+        warningMessage(message = 'No message') {
+            this.rawMessage(message, 'warning');
+        },
+
+        errorMessage(message = 'No message') {
+            this.rawMessage(message, 'error');
+        },
+
+        saveAsFavorite() {
+            this.favorites.push(_.omit(this.connection, 'dateStrings', 'active', 'tested'));
+            this.successMessage('Connection added on favorites.');
+        },
+
+        // @TODO: check connection.favorite === true to disable favorite button
+        setFavorite(favorite) {
+            for (let key in favorite) {
+                this.connection[key] = favorite[key];
+            }
+        },
+
+        removeFavorite(key) {
+            this.favorites.splice(key, 1);
+        },
+
+        getKnex() {
+            return Knex({
+                client: 'mysql',
+                connection: _.omit(this.connection, 'active'),
+            })
+        },
+
+        // TODO: think a better way to test connection
+        testConnection() {
+            let knex = this.getKnex()
+
+            knex.raw('select 1+1 as result')
+                .then(() => {
+                    this.connection.tested = true
+                    this.knex = knex
+                    this.successMessage('Connection accepted.');
+                })
+                .catch(error => {
+                    this.connection.tested = false
+                    this.errorMessage('Connection refused.');
+                    console.error(error);
+                })
+        },
+
+        connect() {
             this.connection.active = true
 
             this.knex.on('query', data => {
@@ -312,8 +447,8 @@ export default {
         },
 
         disconnect() {
-            this.knex = null
             this.connection.active = false
+            this.knex = null
         },
 
         executeQuery() {
@@ -332,10 +467,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    this.$message({
-                        message: 'Something went wrong.',
-                        type: 'error',
-                    })
+                    this.errorMessage('Something went wrong.');
                     console.error(error)
                 })
         },
@@ -432,21 +564,16 @@ export default {
         submitRow(row) {
             let query = this.prepareQuery()
 
-            if (this.rowType == 'update') {
-                query.where(this.rowActive).update(this.rowForm)
-            } else {
-                query.insert(this.rowForm)
-            }
+            this.rowType == 'update'
+                ? query.where(this.rowActive).update(this.rowForm)
+                : query.insert(this.rowForm)
 
             query
                 .then(success => {
                     Object.assign(this.rowActive, this.rowForm)
 
                     this.setRowActive(null)
-                    this.$message({
-                        message: `Row ${this.rowType}d.`,
-                        type: 'success',
-                    })
+                    this.successMessage(`Row ${this.rowType}d.`);
 
                     if (this.rowType === 'create') {
                         this.loadTable(this.tableActive)
@@ -454,10 +581,7 @@ export default {
                 })
                 .catch(error => {
                     this.setRowActive(null)
-                    this.$message({
-                        message: 'Something went wrong.',
-                        type: 'error',
-                    })
+                    this.errorMessage('Something went wrong.');
                     console.error(error)
                 })
         },
@@ -489,11 +613,7 @@ export default {
                     })
             })
 
-            this.$message({
-                message: `Rows deleted.`,
-                type: 'success',
-            })
-
+            this.successMessage('Row(s) deleted.');
             this.loadTable(this.tableActive)
         },
 
@@ -512,28 +632,49 @@ export default {
                 : value
         },
     },
+
+    created() {
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || []
+
+        // default connection
+        if (favorites.length === 0) {
+            favorites.unshift({
+                name: 'docker',
+                host: '127.0.0.1',
+                user: 'docker',
+                password: 'secret',
+                database: 'docker',
+            })
+        }
+
+        this.favorites = favorites
+    },
 }
 </script>
 
-<style>
-@import 'https://fonts.googleapis.com/css?family=Roboto:100,400,400i,700';
-@import '~font-awesome/css/font-awesome.css';
-@import '~highlight.js/styles/github.css';
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,400,400i,700');
 
 body {
-    font-family: Roboto, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
 
-#menu, #content {
-    height: 100vh;
-    overflow: auto;
+.content {
+    padding: 20px;
 }
 
-.el-table-wrapper {
-    padding: 20px;
+.has-full-height {
+    height: 100vh;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    @extend .has-full-height;
+    background-color: #eef1f6;
 }
 
 .el-select {
