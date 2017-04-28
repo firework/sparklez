@@ -201,7 +201,7 @@
                                     </el-form-item>
 
                                     <el-form-item>
-                                        <el-button type="primary" @click="executeQuery()">Execure Query</el-button>
+                                        <el-button type="primary" @click="executeQuery()">Execute Query</el-button>
                                     </el-form-item>
                                 </el-form>
 
@@ -479,7 +479,24 @@ export default {
 
         disconnect() {
             this.connection.active = false
+            this.connection.tested = false
             this.knex = null
+
+            this.resetData()
+        },
+
+        resetData() {
+            this.paginateNumber = 50
+            this.paginatePage   = 1
+            this.tableActive    = null
+            this.databaseActive = null
+            this.rowActive      = null
+            this.query          = null
+            this.queryColumns   = []
+            this.queryData      = []
+            this.queryLog       = []
+            this.tableColumns   = []
+            this.tableData      = []
         },
 
         executeQuery() {
