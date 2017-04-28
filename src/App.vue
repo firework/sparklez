@@ -479,7 +479,25 @@ export default {
 
         disconnect() {
             this.connection.active = false
+            this.connection.tested = false
             this.knex = null
+
+            this.resetData()
+        },
+
+        resetData() {
+            this.paginateNumber = 50
+            this.paginatePage   = 1
+            this.paginatePage   = 1
+            this.tableActive    = null
+            this.databaseActive = null
+            this.rowActive      = null
+            this.query          = null
+            this.queryColumns   = []
+            this.queryData      = []
+            this.queryLog       = []
+            this.tableColumns   = []
+            this.tableData      = []
         },
 
         executeQuery() {
