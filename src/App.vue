@@ -67,9 +67,9 @@
 
                         <el-form-item>
                             <el-button-group>
-                                <el-button type="primary" @click="saveAsFavorite()" :disabled="!connection.tested"><i class="fa fa-fw fa-star"></i> Save as favorite</el-button>
+                                <el-button type="primary" @click="saveAsFavorite()" :disabled="!hasConnectionData"><i class="fa fa-fw fa-star"></i> Save as favorite</el-button>
                                 <el-button type="primary" @click="testConnection()" :disabled="!hasConnectionData"><i class="fa fa-fw fa-bolt"></i> Test connection</el-button>
-                                <el-button type="primary" @click="connect()" :disabled="!connection.tested"><i class="fa fa-fw fa-plug"></i> Connect</el-button>
+                                <el-button type="primary" @click="connect()" :disabled="!hasConnectionData"><i class="fa fa-fw fa-plug"></i> Connect</el-button>
                             </el-button-group>
                         </el-form-item>
                     </el-form>
@@ -134,13 +134,6 @@
                         >Delete</el-button>
                     </el-button-group>
 
-                    <el-input
-                        type="number"
-                        class="paginate"
-                        placeholder="Paginate"
-                        v-model="paginateNumber"
-                    ></el-input>
-
                     <el-button type="info" @click="loadTable()"><i class="fa fa-fw fa-refresh"></i> Refresh</el-button>
 
                     <el-button type="warning" @click="disconnect()"><i class="fa fa-fw fa-power-off"></i> Disconnect</el-button>
@@ -153,10 +146,12 @@
 
                             <div id="table-content">
                                 <el-pagination
-                                    layout="total, prev, pager, next, jumper"
-                                    :page-size="+paginateNumber"
+                                    layout="sizes, total, prev, pager, next, jumper"
+                                    :page-sizes="paginateSizes"
+                                    :page-size="paginateNumber"
                                     :total="tableCount"
-                                    @current-change="paginateChange($event)"
+                                    @size-change="setPaginateNumber($event)"
+                                    @current-change="setPaginatePage($event)"
                                 ></el-pagination>
                                 <br>
                                 <div class="el-table">
@@ -190,13 +185,6 @@
                                         <span class="el-table__empty-text">No result</span>
                                     </div>
                                 </div>
-                                <br>
-                                <el-pagination
-                                    layout="total, prev, pager, next, jumper"
-                                    :page-size="+paginateNumber"
-                                    :total="tableCount"
-                                    @current-change="paginateChange($event)"
-                                ></el-pagination>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane>
@@ -333,7 +321,8 @@ export default {
             active: false,
             tested: false,
         },
-        paginateNumber: 100,
+        paginateSizes: [1, 50, 100, 200, 300, 400, 500, 1000],
+        paginateNumber: 50,
         paginatePage: 1,
         favorites: [],
         knex: null,
@@ -374,8 +363,7 @@ export default {
                 !!this.connection.host &&
                 !!this.connection.port &&
                 !!this.connection.user &&
-                !!this.connection.password &&
-                !!this.connection.database
+                !!this.connection.password
             )
         },
     },
@@ -465,6 +453,7 @@ export default {
         },
 
         connect() {
+            this.knex = this.knex || this.getKnex()
             this.connection.active = true
 
             this.knex.on('query', data => {
@@ -680,7 +669,12 @@ export default {
             return this.knex.withSchema(database).from(table)
         },
 
-        paginateChange(page) {
+        setPaginateNumber(number) {
+            this.paginateNumber = number
+            this.loadTable()
+        },
+
+        setPaginatePage(page) {
             this.paginatePage = page
             this.loadTable()
         },
@@ -695,21 +689,7 @@ export default {
     },
 
     created() {
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || []
-
-        // default connection
-        if (favorites.length === 0) {
-            favorites.unshift({
-                name: 'docker',
-                host: '127.0.0.1',
-                port: '3306',
-                user: 'docker',
-                password: 'secret',
-                database: 'docker',
-            })
-        }
-
-        this.favorites = favorites
+        this.favorites = JSON.parse(localStorage.getItem('favorites')) || []
     },
 }
 </script>

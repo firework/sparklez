@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/en'
 import highlightjs from 'highlight.js'
 import App from '~/App.vue'
 
@@ -8,7 +9,7 @@ import 'element-ui/lib/theme-default/index.css'
 import 'font-awesome/css/font-awesome.css'
 import 'highlight.js/styles/github.css'
 
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 
 Vue.directive('highlightjs', {
     deep: true,
