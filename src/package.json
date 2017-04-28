@@ -3,7 +3,7 @@
   "description": "Database Tool",
   "author": "Firework Web e Mobile <contact@fireworkweb.com>",
   "email": "opensource@fireworkweb.com",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "electron.js",
   "dependencies": {
     "mysql": "^2.13.0"
