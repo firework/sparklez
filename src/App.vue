@@ -144,6 +144,38 @@
                         <el-tab-pane>
                             <span slot="label"><i class="fa fa-fw fa-file-text"></i> Content</span>
 
+                            <el-form :inline="true" :model="filter">
+                                <el-form-item>
+                                    <el-select v-model="filter.column" placeholder="Column">
+                                        <el-option
+                                            v-for="(column, key) in tableColumns"
+                                            :key="key"
+                                            :label="column.column_name"
+                                            :value="column.column_name"
+                                        ></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-select v-model="filter.operator" placeholder="Operator">
+                                        <el-option
+                                            v-for="(filter, key) in filter.operators"
+                                            :key="key"
+                                            :label="filter"
+                                            :value="filter"
+                                        ></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-input v-model="filter.value" placeholder="Value"></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click="loadTableData()">Filter</el-button>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="warning" @click="resetFilterAndReload()">Filter</el-button>
+                                </el-form-item>
+                            </el-form>
+
                             <div id="table-content">
                                 <el-pagination
                                     layout="sizes, total, prev, pager, next, jumper"
@@ -371,6 +403,24 @@ export default {
             active: false,
             tested: false,
         },
+        filter: {
+            column: null,
+            operator: null,
+            value: null,
+            operators: [
+                '=',
+                '!=',
+                '>',
+                '<',
+                '>=',
+                '<=',
+                // @TODO: implement these filters
+                // 'IN',
+                // 'LIKE',
+                // 'IS NULL',
+                // 'IS NOT NULL',
+            ],
+        },
         paginateSizes: [1, 50, 100, 200, 300, 400, 500, 1000],
         paginateNumber: 50,
         paginatePage: 1,
@@ -549,6 +599,17 @@ export default {
             this.tableData = []
         },
 
+        resetFilter() {
+            this.filter.column = null
+            this.filter.operator = null
+            this.filter.value = null
+        },
+
+        resetFilterAndReload() {
+            this.resetFilter()
+            this.loadTableData()
+        },
+
         executeQuery() {
             this.knex
                 .raw(this.query)
@@ -633,6 +694,7 @@ export default {
             table = table || this.tableActive
 
             this.rowsSelected = []
+            this.resetFilter()
 
             this.loadTableCount(table)
             this.loadTableColumns(table)
@@ -665,7 +727,7 @@ export default {
         },
 
         loadTableData(table) {
-            this.prepareQuery(this.databaseActive, table)
+            this.prepareQueryWithFilters(this.databaseActive, table)
                 .select('*')
                 .limit(this.paginateNumber)
                 .offset(this.paginateNumber * (this.paginatePage - 1))
@@ -735,6 +797,24 @@ export default {
             table = table || this.tableActive
 
             return this.knex.withSchema(database).from(table)
+        },
+
+        prepareQueryWithFilters(database, table) {
+            let query = this.prepareQuery()
+
+            if (
+                !this.filter.column ||
+                !this.filter.operator ||
+                !this.filter.value
+            ) {
+                return query
+            }
+
+            return query.where(
+                this.filter.column,
+                this.filter.operator,
+                this.filter.value
+            )
         },
 
         setPaginateNumber(number) {
@@ -835,5 +915,9 @@ body {
 
 .paginate {
     width: auto !important;
+}
+
+.fa-check-square-o {
+    margin-left: 2px;
 }
 </style>

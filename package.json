@@ -40,13 +40,13 @@
     }
   },
   "dependencies": {
-    "element-ui": "^1.2.9",
+    "element-ui": "1.3.0-beta.2",
     "font-awesome": "^4.7.0",
     "highlight.js": "^9.11.0",
     "knex": "^0.13.0",
     "moment": "^2.18.1",
     "mysql": "^2.13.0",
-    "vue": "^2.2.6"
+    "vue": "^2.3.2"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
