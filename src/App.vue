@@ -142,7 +142,7 @@
 
                     <el-tabs>
                         <el-tab-pane>
-                            <span slot="label"><i class="fa fa-fw fa-table"></i> Content</span>
+                            <span slot="label"><i class="fa fa-fw fa-file-text"></i> Content</span>
 
                             <div id="table-content">
                                 <el-pagination
@@ -158,8 +158,8 @@
                                     <table class="el-table__body" cellspacing="0" cellpadding="0">
                                         <thead>
                                             <tr>
-                                                <th v-for="column in tableColumns" :key="column">
-                                                    <div class="cell" v-text="column"></div>
+                                                <th v-for="(column, key) in tableColumns" :key="key">
+                                                    <div class="cell" v-text="column.column_name"></div>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -172,10 +172,10 @@
                                                 @click="toggleRow(key)"
                                             >
                                                 <td
-                                                    v-for="column in tableColumns"
-                                                    :key="column"
+                                                    v-for="(column, key) in tableColumns"
+                                                    :key="key"
                                                 >
-                                                    <div class="cell">{{ row[column] | str_limit }}</div>
+                                                    <div class="cell">{{ row[column.column_name] | str_limit }}</div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -184,6 +184,55 @@
                                     <div class="el-table__empty-block" v-if="tableData.length === 0">
                                         <span class="el-table__empty-text">No result</span>
                                     </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane>
+                            <span slot="label"><i class="fa fa-fw fa-table"></i> Structure</span>
+                            <div id="structure">
+                                <div class="el-table">
+                                    <table class="el-table__body" cellspacing="0" cellpadding="0">
+                                        <thead>
+                                            <tr>
+                                                <th><div class="cell">Field</div></th>
+                                                <th><div class="cell">Type</div></th>
+                                                <th><div class="cell">Length</div></th>
+                                                <th><div class="cell">Unsigned</div></th>
+                                                <th><div class="cell">Zerofill</div></th>
+                                                <th><div class="cell">Nullable</div></th>
+                                                <th><div class="cell">Key</div></th>
+                                                <th><div class="cell">Default</div></th>
+                                                <th><div class="cell">Extra</div></th>
+                                                <th><div class="cell">Comment</div></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                v-for="(row, key) in tableColumns"
+                                                :key="key"
+                                            >
+                                                <td><div class="cell" v-text="row.column_name"></div></td>
+                                                <td><div class="cell" v-text="row.data_type"></div></td>
+                                                <td><div class="cell" v-text="getColumnLength(row.column_type)"></div></td>
+                                                <td><div class="cell"><i class="fa fa-fw" :class="{
+                                                    'fa-check-square-o': isColumnUnsigned(row.column_type),
+                                                    'fa-square-o': !isColumnUnsigned(row.column_type),
+                                                }"></i></div></td>
+                                                <td><div class="cell"><i class="fa fa-fw" :class="{
+                                                    'fa-check-square-o': isColumnZerofill(row.column_type),
+                                                    'fa-square-o': !isColumnZerofill(row.column_type),
+                                                }"></i></div></td>
+                                                <td><div class="cell"><i class="fa fa-fw" :class="{
+                                                    'fa-check-square-o': isColumnNullable(row.is_nullable),
+                                                    'fa-square-o': !isColumnNullable(row.is_nullable),
+                                                }"></i></div></td>
+                                                <td><div class="cell" v-text="row.column_key"></div></td>
+                                                <td><div class="cell" v-text="row.column_default"></div></td>
+                                                <td><div class="cell" v-text="row.extra"></div></td>
+                                                <td><div class="cell" v-text="row.column_comment"></div></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </el-tab-pane>
@@ -304,6 +353,7 @@ import {
     clone as _clone,
     isNull as _isNull,
     isNumber as _isNumber,
+    mapKeys as _mapKeys,
     omit as _omit,
     without as _without,
 } from 'lodash'
@@ -487,16 +537,16 @@ export default {
 
         resetData() {
             this.paginateNumber = 50
-            this.paginatePage   = 1
-            this.tableActive    = null
+            this.paginatePage = 1
+            this.tableActive = null
             this.databaseActive = null
-            this.rowActive      = null
-            this.query          = null
-            this.queryColumns   = []
-            this.queryData      = []
-            this.queryLog       = []
-            this.tableColumns   = []
-            this.tableData      = []
+            this.rowActive = null
+            this.query = null
+            this.queryColumns = []
+            this.queryData = []
+            this.queryLog = []
+            this.tableColumns = []
+            this.tableData = []
         },
 
         executeQuery() {
@@ -601,15 +651,16 @@ export default {
 
         loadTableColumns(table) {
             this.knex
-                .select('column_name')
+                .select('*')
                 .from('information_schema.columns')
                 .where({
                     table_schema: this.databaseActive,
                     table_name: table,
                 })
-                .pluck('column_name')
-                .then(tableColumns => {
-                    this.tableColumns = tableColumns
+                .then(result => {
+                    this.tableColumns = result.map(row =>
+                        _mapKeys(row, (value, key) => key.toLowerCase())
+                    )
                 })
         },
 
@@ -694,6 +745,24 @@ export default {
         setPaginatePage(page) {
             this.paginatePage = page
             this.loadTable()
+        },
+
+        getColumnLength(type) {
+            let match = new RegExp(/(.+)\(([0-9]+)\)(.+)?/).exec(type)
+
+            if (match) return match[2]
+        },
+
+        isColumnUnsigned(type) {
+            return type.indexOf('unsigned') !== -1
+        },
+
+        isColumnZerofill(type) {
+            return type.indexOf('zerofill') !== -1
+        },
+
+        isColumnNullable(isNullable) {
+            return isNullable === 'YES'
         },
     },
 

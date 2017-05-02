@@ -9,7 +9,6 @@
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
     "prod": "cross-env NODE_ENV=production webpack --hide-modules",
     "start": "electron .",
-    "pack:osx": "yarn pack:osx && yarn pack:linux",
     "pack:osx": "electron-packager dist Sparklez --out=build --platform=darwin --arch=x64 --build-version=64-bit --icon=src/assets/installer/icon.icns --prune --asar --overwrite",
     "pack:linux": "electron-packager dist Sparklez --out=build --platform=linux --arch=x64 --build-version=64-bit --icon=src/assets/installer/icon.ico --prune --asar --overwrite",
     "build": "yarn build:osx && yarn build:linux",
@@ -20,27 +19,31 @@
     "pack:build:linux": "yarn pack:linux && yarn build:linux"
   },
   "build": {
-      "productName": "Sparklez",
-      "appId": "com.fireworkweb.sparklez",
-      "mac": {
-          "category": "public.app-category.developer-tools",
-          "target": ["default"]
-      },
-      "linux": {
-          "category": "Development",
-          "target": ["deb"]
-      },
-      "directories": {
-          "buildResources": "src/assets/installer",
-          "output": "build",
-          "app": "dist"
-      }
+    "productName": "Sparklez",
+    "appId": "com.fireworkweb.sparklez",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "default"
+      ]
+    },
+    "linux": {
+      "category": "Development",
+      "target": [
+        "deb"
+      ]
+    },
+    "directories": {
+      "buildResources": "src/assets/installer",
+      "output": "build",
+      "app": "dist"
+    }
   },
   "dependencies": {
     "element-ui": "^1.2.9",
     "font-awesome": "^4.7.0",
     "highlight.js": "^9.11.0",
-    "knex": "^0.12.9",
+    "knex": "^0.13.0",
     "moment": "^2.18.1",
     "mysql": "^2.13.0",
     "vue": "^2.2.6"
@@ -53,8 +56,8 @@
     "electron-builder": "^17.1.1",
     "electron-packager": "^8.6.0",
     "html-webpack-plugin": "^2.24.1",
-    "laravel-mix": "^0.11.3",
+    "laravel-mix": "^0.11.4",
     "webpack": "^2.4.1",
-    "webpack-dev-server": "^2.4.4"
+    "webpack-dev-server": "^2.4.5"
   }
 }
