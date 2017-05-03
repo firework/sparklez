@@ -821,11 +821,6 @@ export default {
             }
 
             switch (this.filter.operator) {
-                case 'IN':
-                    return query.whereIn(
-                        this.filter.column,
-                        this.filter.operator
-                    )
                 case 'IS NULL':
                     return query.whereNull(this.filter.column)
                 case 'IS NOT NULL':
@@ -834,6 +829,13 @@ export default {
 
             if (!this.filter.value) {
                 return query
+            }
+
+            if (this.filter.operator === 'IN') {
+                return query.whereIn(
+                    this.filter.column,
+                    this.filter.value.split(',')
+                )
             }
 
             return query.where(
