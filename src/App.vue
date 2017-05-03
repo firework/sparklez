@@ -54,7 +54,11 @@
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="secret" v-model="connection.password">
+                            <el-input
+                                placeholder="secret"
+                                type="password"
+                                v-model="connection.password"
+                            >
                                 <template slot="prepend"><i class="fa fa-fw fa-lock"></i> Password</template>
                             </el-input>
                         </el-form-item>
@@ -166,13 +170,17 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-input v-model="filter.value" placeholder="Value"></el-input>
+                                    <el-input
+                                        v-model="filter.value"
+                                        placeholder="Value"
+                                        :disabled="filterOperatorValue"
+                                    ></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button type="primary" @click="loadTableData()">Filter</el-button>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="warning" @click="resetFilterAndReload()">Filter</el-button>
+                                    <el-button type="warning" @click="resetFilterAndReload()">Reset Filter</el-button>
                                 </el-form-item>
                             </el-form>
 
@@ -362,10 +370,10 @@
                     >
                         <el-form-item
                             v-for="column in tableColumns"
-                            :key="column"
-                            :label="column">
+                            :key="column.column_name"
+                            :label="column.column_name">
                             <el-input
-                                v-model="rowForm[column]"
+                                v-model="rowForm[column.column_name]"
                             ></el-input>
                         </el-form-item>
                     </el-form>
@@ -414,11 +422,10 @@ export default {
                 '<',
                 '>=',
                 '<=',
-                // @TODO: implement these filters
-                // 'IN',
-                // 'LIKE',
-                // 'IS NULL',
-                // 'IS NOT NULL',
+                'IN',
+                'LIKE',
+                'IS NULL',
+                'IS NOT NULL',
             ],
         },
         paginateSizes: [1, 50, 100, 200, 300, 400, 500, 1000],
@@ -465,6 +472,10 @@ export default {
                 !!this.connection.user &&
                 !!this.connection.password
             )
+        },
+
+        filterOperatorValue() {
+            return this.filter.operator === 'IS NULL' || this.filter.operator === 'IS NOT NULL'
         },
     },
 
@@ -804,10 +815,27 @@ export default {
 
             if (
                 !this.filter.column ||
-                !this.filter.operator ||
-                !this.filter.value
+                !this.filter.operator
             ) {
                 return query
+            }
+
+            switch (this.filter.operator) {
+                case 'IS NULL':
+                    return query.whereNull(this.filter.column)
+                case 'IS NOT NULL':
+                    return query.whereNotNull(this.filter.column)
+            }
+
+            if (!this.filter.value) {
+                return query
+            }
+
+            if (this.filter.operator === 'IN') {
+                return query.whereIn(
+                    this.filter.column,
+                    this.filter.value.split(',')
+                )
             }
 
             return query.where(
