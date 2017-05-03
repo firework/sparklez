@@ -3,7 +3,7 @@
   "description": "Database Tool",
   "author": "Firework Web e Mobile <contact@fireworkweb.com>",
   "main": "dist/electron.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
