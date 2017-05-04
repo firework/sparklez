@@ -5,7 +5,7 @@ import highlightjs from 'highlight.js'
 import App from '~/App.vue'
 
 // styles
-import 'element-ui/lib/theme-default/index.css'
+import '~/css/theme/index.css'
 import 'font-awesome/css/font-awesome.css'
 import 'highlight.js/styles/github.css'
 

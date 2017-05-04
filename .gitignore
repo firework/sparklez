@@ -2,5 +2,6 @@
 build/
 dist/
 node_modules/
+src/css/theme
 npm-debug.log
 .idea
