@@ -643,7 +643,7 @@ export default {
         },
 
         setTableActive(table) {
-            if (table === this.tableActive) return
+            if ( ! table || table === this.tableActive) return
 
             this.tableActive = table
             this.loadTable(table)
@@ -703,6 +703,8 @@ export default {
 
         loadTable(table) {
             table = table || this.tableActive
+
+            if ( ! table) return;
 
             this.rowsSelected = []
             this.resetFilter()
