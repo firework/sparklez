@@ -676,15 +676,13 @@ export default {
         },
 
         loadDatabases() {
-            this.knex
-                .select('table_schema')
-                .from('information_schema.tables')
-                .groupBy('table_schema')
-                .pluck('table_schema')
-                .then(databases => {
-                    this.databases = databases
-                    this.setDatabaseActive(this.connection.database)
-                })
+            this.knex.raw('show databases').then(databases => {
+                this.databases = databases[0].map(function(db) {
+                    return db.Database
+                });
+
+                this.setDatabaseActive(this.connection.database)
+            });
         },
 
         loadTables(database) {
