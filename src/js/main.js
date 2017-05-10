@@ -3,6 +3,8 @@ import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 import highlightjs from 'highlight.js'
 import App from '~/App.vue'
+import store from './store'
+import filters from './filter'
 
 // styles
 import '~/css/theme/index.css'
@@ -10,6 +12,7 @@ import 'font-awesome/css/font-awesome.css'
 import 'highlight.js/styles/github.css'
 
 Vue.use(ElementUI, { locale })
+Vue.use(filters)
 
 Vue.directive('highlightjs', {
     deep: true,
@@ -44,5 +47,6 @@ Vue.directive('highlightjs', {
 
 new Vue({
     el: '#app',
+    store,
     render: h => h(App),
 })
