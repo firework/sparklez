@@ -1,6 +1,6 @@
 import { defer as _defer } from 'lodash'
-import AppLoading from '../app/global/loading.vue'
-import AppError from '../app/global/error.vue'
+import AppLoading from '~/app/global/loading.vue'
+import AppError from '~/app/global/error.vue'
 
 export default {
     asyncComp (component, loading, error) {

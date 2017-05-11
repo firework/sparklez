@@ -2,11 +2,21 @@
     <div id="query">
         <el-form>
             <el-form-item>
-                <el-input type="textarea" :autosize="{ minRows: 10 }" placeholder="Execute Query" v-model="query"></el-input>
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 10 }"
+                    placeholder="Execute Query"
+                    v-model="query"
+                ></el-input>
             </el-form-item>
 
             <el-form-item>
-                <el-button type="primary" @click="executeQuery()">Execute Query</el-button>
+                <el-button
+                    type="primary"
+                    @click="executeQuery()"
+                >
+                    Execute Query
+                </el-button>
             </el-form-item>
         </el-form>
 
@@ -35,8 +45,8 @@
 </template>
 
 <script>
-import ConnectionMixin from '../../../js/mixin/connection.js'
-import AlertMessageMixin from '../../../js/mixin/alertMessage.js'
+import ConnectionMixin from '~/js/mixin/connection'
+import AlertMessageMixin from '~/js/mixin/alertMessage'
 
 export default {
     name: 'Query',

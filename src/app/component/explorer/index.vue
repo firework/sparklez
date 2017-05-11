@@ -182,16 +182,15 @@
 <script>
 import { 
     mapKeys as _mapKeys,
-    defer as _defer,
     without as _without,
     clone as _clone,
 } from 'lodash'
-import componentAsync from '../../../js/componentAsync.js'
-import AppStructure from './structure.vue'
-import AppQuery from './query.vue'
-import AppQueryLog from './queryLog.vue'
-import ConnectionMixin from '../../../js/mixin/connection.js'
-import AlertMessageMixin from '../../../js/mixin/alertMessage.js'
+import componentAsync from '~/js/componentAsync'
+import AppStructure from './structure'
+import AppQuery from './query'
+import AppQueryLog from './queryLog'
+import ConnectionMixin from '~/js/mixin/connection'
+import AlertMessageMixin from '~/js/mixin/alertMessage'
 
 export default {
     name: 'Content',

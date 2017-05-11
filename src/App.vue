@@ -144,18 +144,14 @@
 <script>
 import Knex from 'knex'
 import {
-    clone as _clone,
     isNull as _isNull,
     isNumber as _isNumber,
-    mapKeys as _mapKeys,
     omit as _omit,
-    without as _without,
-    defer as _defer,
 } from 'lodash'
-import componentAsync from './js/componentAsync.js'
-import AppExplorer from './app/component/explorer/index.vue'
-import ConnectionMixin from './js/mixin/connection.js'
-import AlertMessageMixin from './js/mixin/alertMessage.js'
+import componentAsync from '~/js/componentAsync'
+import AppExplorer from '~/app/component/explorer/index'
+import ConnectionMixin from '~/js/mixin/connection'
+import AlertMessageMixin from '~/js/mixin/alertMessage'
 
 export default {
     name: 'App',
@@ -178,11 +174,7 @@ export default {
 
     computed: {
         tablesFiltered () {
-            return this.tables.filter(table => {
-                return (
-                    !this.tableFilter || table.indexOf(this.tableFilter) !== -1
-                )
-            })
+            return this.tables.filter(table => !this.tableFilter || table.indexOf(this.tableFilter) !== -1)
         },
 
         hasConnectionData () {
@@ -218,7 +210,7 @@ export default {
     methods: {
         saveAsFavorite () {
             this.favorites.push(
-                _.omit(this.connection, 'dateStrings', 'active', 'tested')
+                _omit(this.connection, 'dateStrings', 'active', 'tested')
             )
             this.successMessage('Connection added on favorites.')
         },
@@ -237,7 +229,7 @@ export default {
         getKnex () {
             let knex = Knex({
                 client: 'mysql',
-                connection: _.omit(this.connection, 'active'),
+                connection: _omit(this.connection, 'active'),
             })
 
             this.setKnex(knex)

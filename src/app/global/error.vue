@@ -1,6 +1,6 @@
 <template>
     <div class="error">
-       <i class="el-icon-circle-close"></i> Could not load component.
+        <i class="el-icon-circle-close"></i> Could not load component.
     </div>
 </template>
 

@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import ConnectionMixin from '../../../js/mixin/connection.js'
+import ConnectionMixin from '~/js/mixin/connection'
 
 export default {
     name: 'Structure',
