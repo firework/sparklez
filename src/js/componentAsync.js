@@ -3,7 +3,7 @@ import AppLoading from '~/app/global/loading.vue'
 import AppError from '~/app/global/error.vue'
 
 export default {
-    asyncComp (component, loading, error) {
+    asyncComp(component, loading, error) {
         loading = loading || AppLoading
         error = error || AppError
 
@@ -16,5 +16,5 @@ export default {
             loading: loading,
             error: error,
         })
-    }
+    },
 }

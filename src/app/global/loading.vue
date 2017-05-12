@@ -34,7 +34,7 @@ export default {
     position: relative;
     -webkit-transform: scale(1.1);
         -ms-transform: scale(1.1);
-            transform: scale(1.1); 
+            transform: scale(1.1);
 }
 .sk-folding-cube .sk-cube:before {
     content: '';
@@ -68,7 +68,7 @@ export default {
 }
 .sk-folding-cube .sk-cube3:before {
     -webkit-animation-delay: 0.6s;
-        animation-delay: 0.6s; 
+        animation-delay: 0.6s;
 }
 .sk-folding-cube .sk-cube4:before {
     -webkit-animation-delay: 0.9s;
@@ -78,31 +78,31 @@ export default {
     0%, 10% {
         -webkit-transform: perspective(140px) rotateX(-180deg);
                 transform: perspective(140px) rotateX(-180deg);
-        opacity: 0; 
+        opacity: 0;
     } 25%, 75% {
         -webkit-transform: perspective(140px) rotateX(0deg);
                 transform: perspective(140px) rotateX(0deg);
-        opacity: 1; 
+        opacity: 1;
     } 90%, 100% {
         -webkit-transform: perspective(140px) rotateY(180deg);
                 transform: perspective(140px) rotateY(180deg);
-        opacity: 0; 
-    } 
+        opacity: 0;
+    }
 }
 
 @keyframes sk-foldCubeAngle {
     0%, 10% {
         -webkit-transform: perspective(140px) rotateX(-180deg);
                 transform: perspective(140px) rotateX(-180deg);
-        opacity: 0; 
+        opacity: 0;
     } 25%, 75% {
         -webkit-transform: perspective(140px) rotateX(0deg);
                 transform: perspective(140px) rotateX(0deg);
-        opacity: 1; 
+        opacity: 1;
     } 90%, 100% {
         -webkit-transform: perspective(140px) rotateY(180deg);
                 transform: perspective(140px) rotateY(180deg);
-        opacity: 0; 
+        opacity: 0;
     }
 }
 </style>

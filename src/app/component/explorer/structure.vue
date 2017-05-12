@@ -94,9 +94,7 @@ import ConnectionMixin from '~/js/mixin/connection'
 export default {
     name: 'Structure',
 
-    mixins: [
-        ConnectionMixin
-    ],
+    mixins: [ConnectionMixin],
 
     methods: {
         getColumnLength(type) {

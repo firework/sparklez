@@ -143,11 +143,7 @@
 
 <script>
 import Knex from 'knex'
-import {
-    isNull as _isNull,
-    isNumber as _isNumber,
-    omit as _omit,
-} from 'lodash'
+import { isNull as _isNull, isNumber as _isNumber, omit as _omit } from 'lodash'
 import componentAsync from '~/js/componentAsync'
 import AppExplorer from '~/app/component/explorer/index'
 import ConnectionMixin from '~/js/mixin/connection'
@@ -156,13 +152,10 @@ import AlertMessageMixin from '~/js/mixin/alertMessage'
 export default {
     name: 'App',
 
-    mixins: [
-        ConnectionMixin,
-        AlertMessageMixin,
-    ],
-    
+    mixins: [ConnectionMixin, AlertMessageMixin],
+
     components: {
-        'app-explorer': componentAsync.asyncComp(AppExplorer)
+        'app-explorer': componentAsync.asyncComp(AppExplorer),
     },
 
     data: () => ({
@@ -173,11 +166,14 @@ export default {
     }),
 
     computed: {
-        tablesFiltered () {
-            return this.tables.filter(table => !this.tableFilter || table.indexOf(this.tableFilter) !== -1)
+        tablesFiltered() {
+            return this.tables.filter(
+                table =>
+                    !this.tableFilter || table.indexOf(this.tableFilter) !== -1
+            )
         },
 
-        hasConnectionData () {
+        hasConnectionData() {
             return (
                 !!this.connection.name &&
                 !!this.connection.host &&
@@ -200,7 +196,7 @@ export default {
         //     deep: true,
         // },
 
-        favorites (favorites) {
+        favorites(favorites) {
             localStorage.setItem('favorites', JSON.stringify(favorites))
 
             return favorites
@@ -208,7 +204,7 @@ export default {
     },
 
     methods: {
-        saveAsFavorite () {
+        saveAsFavorite() {
             this.favorites.push(
                 _omit(this.connection, 'dateStrings', 'active', 'tested')
             )
@@ -216,17 +212,17 @@ export default {
         },
 
         // @TODO: check connection.favorite === true to disable favorite button
-        setFavorite (favorite) {
+        setFavorite(favorite) {
             for (let key in favorite) {
                 this.connection[key] = favorite[key]
             }
         },
 
-        removeFavorite (key) {
+        removeFavorite(key) {
             this.favorites.splice(key, 1)
         },
 
-        getKnex () {
+        getKnex() {
             let knex = Knex({
                 client: 'mysql',
                 connection: _omit(this.connection, 'active'),
@@ -236,7 +232,7 @@ export default {
         },
 
         // TODO: think a better way to test connection
-        testConnection () {
+        testConnection() {
             this.knex = this.knex || this.getKnex()
 
             this.knex
@@ -252,10 +248,10 @@ export default {
                 })
         },
 
-        connect () {
+        connect() {
             this.knex = this.knex || this.getKnex()
 
-            this.updatePropertyConnection({ 'property': 'active', 'value': true })
+            this.updatePropertyConnection({ property: 'active', value: true })
 
             this.knex.on('query', data => {
                 // pluck are the internal queries to get databases, tables and columns
@@ -279,23 +275,23 @@ export default {
             this.loadDatabases()
         },
 
-        changeTableActive (table) {
-            if ( ! table || table === this.tableActive) return
+        changeTableActive(table) {
+            if (!table || table === this.tableActive) return
 
             this.setTableActive(table)
         },
 
-        loadDatabases () {
+        loadDatabases() {
             this.knex.raw('show databases').then(databases => {
                 this.databases = databases[0].map(function(db) {
                     return db.Database
-                });
+                })
 
                 this.setDatabaseActive(this.connection.database)
-            });
+            })
         },
 
-        loadTables (database) {
+        loadTables(database) {
             database = database || this.databaseActive
 
             this.knex
@@ -310,7 +306,7 @@ export default {
         },
     },
 
-    created () {
+    created() {
         this.favorites = JSON.parse(localStorage.getItem('favorites')) || []
     },
 }

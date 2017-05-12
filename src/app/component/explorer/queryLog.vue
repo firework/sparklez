@@ -33,8 +33,6 @@ import ConnectionMixin from '~/js/mixin/connection'
 export default {
     name: 'QueryLog',
 
-    mixins: [
-        ConnectionMixin,
-    ],
+    mixins: [ConnectionMixin],
 }
 </script>

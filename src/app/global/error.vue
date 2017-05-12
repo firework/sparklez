@@ -20,7 +20,7 @@ export default {
     position: fixed;
 
     & > i {
-        color: #ff4949; 
+        color: #ff4949;
     }
 }
 </style>

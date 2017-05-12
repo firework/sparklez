@@ -7,9 +7,13 @@ const filters = {
 }
 
 export default (Vue, options) => {
-    Object.keys(filters).forEach((key) => {
+    Object.keys(filters).forEach(key => {
         if (Vue.filter(key)) {
-            console.warn('[filter duplication]: A filter named ' + key + 'has already been installed.')
+            console.warn(
+                '[filter duplication]: A filter named ' +
+                    key +
+                    'has already been installed.'
+            )
         } else {
             Vue.filter(key, filters[key])
         }

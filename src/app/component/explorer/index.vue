@@ -1,5 +1,5 @@
 <template>
-    <div class="explorer">
+    <div class="explorer has-full-height">
         <div class="explorer__header">
             <el-button-group>
                 <el-button
@@ -69,7 +69,7 @@
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input 
+                            <el-input
                                 v-model="filter.value"
                                 placeholder="Value"
                                 :disabled="filterOperatorValue"
@@ -86,12 +86,12 @@
                     </el-form>
 
                     <div id="table-content">
-                        <el-pagination 
-                            layout="sizes, total, prev, pager, next, jumper" 
-                            :page-sizes="paginateSizes" 
-                            :page-size="paginateNumber" 
-                            :total="tableCount" 
-                            @size-change="setPaginateNumber($event)" 
+                        <el-pagination
+                            layout="sizes, total, prev, pager, next, jumper"
+                            :page-sizes="paginateSizes"
+                            :page-size="paginateNumber"
+                            :total="tableCount"
+                            @size-change="setPaginateNumber($event)"
                             @current-change="setPaginatePage($event)"
                         ></el-pagination>
                         <br>
@@ -159,7 +159,7 @@
 
                 <app-structure></app-structure>
             </el-tab-pane>
-            
+
             <el-tab-pane>
                 <span slot="label">
                     <i class="fa fa-fw fa-terminal"></i> Query
@@ -180,7 +180,7 @@
 </template>
 
 <script>
-import { 
+import {
     mapKeys as _mapKeys,
     without as _without,
     clone as _clone,
@@ -195,17 +195,14 @@ import AlertMessageMixin from '~/js/mixin/alertMessage'
 export default {
     name: 'Content',
 
-    mixins: [
-        ConnectionMixin,
-        AlertMessageMixin,
-    ],
+    mixins: [ConnectionMixin, AlertMessageMixin],
 
     components: {
         'app-structure': componentAsync.asyncComp(AppStructure),
         'app-query': componentAsync.asyncComp(AppQuery),
         'app-query-log': componentAsync.asyncComp(AppQueryLog),
     },
-    
+
     data: () => ({
         rowsSelected: [],
         filter: {
@@ -234,23 +231,26 @@ export default {
     }),
 
     watch: {
-        tableActive () {
+        tableActive() {
             this.loadTable(this.tableActive)
         },
     },
 
     computed: {
-        filterOperatorValue () {
-            return this.filter.operator === 'IS NULL' || this.filter.operator === 'IS NOT NULL'
+        filterOperatorValue() {
+            return (
+                this.filter.operator === 'IS NULL' ||
+                this.filter.operator === 'IS NOT NULL'
+            )
         },
 
-        hasRowActive () {
+        hasRowActive() {
             return !!this.rowActive
         },
     },
 
     methods: {
-        resetData () {
+        resetData() {
             this.paginateNumber = 50
             this.paginatePage = 1
             this.rowActive = null
@@ -258,18 +258,18 @@ export default {
             this.resetConnectionState()
         },
 
-        disconnect () {
-            this.updatePropertyConnection({ 'property': 'active', 'value': false})
-            this.updatePropertyConnection({ 'property': 'tested', 'value': false})
+        disconnect() {
+            this.updatePropertyConnection({ property: 'active', value: false })
+            this.updatePropertyConnection({ property: 'tested', value: false })
             this.setKnex(null)
 
             this.resetData()
         },
 
-        loadTable (table) {
+        loadTable(table) {
             table = table || this.tableActive
 
-            if ( ! table) return;
+            if (!table) return
 
             this.rowsSelected = []
             this.resetFilter()
@@ -279,22 +279,22 @@ export default {
             this.loadTableData(table)
         },
 
-        resetFilter () {
+        resetFilter() {
             this.filter.column = null
             this.filter.operator = null
             this.filter.value = null
         },
 
-        resetFilterAndReload () {
+        resetFilterAndReload() {
             this.resetFilter()
             this.loadTableData()
         },
 
-        isRowSelected (key) {
+        isRowSelected(key) {
             return this.rowsSelected.includes(key)
         },
 
-        toggleRow (rowKey) {
+        toggleRow(rowKey) {
             if (this.isRowSelected(rowKey)) {
                 this.rowsSelected = _without(this.rowsSelected, rowKey)
             } else {
@@ -302,7 +302,7 @@ export default {
             }
         },
 
-        loadTableCount (table) {
+        loadTableCount(table) {
             this.prepareQuery(this.databaseActive, table)
                 .count()
                 .then(result => {
@@ -312,7 +312,7 @@ export default {
                 })
         },
 
-        loadTableColumns (table) {
+        loadTableColumns(table) {
             this.knex
                 .select('*')
                 .from('information_schema.columns')
@@ -329,7 +329,7 @@ export default {
                 })
         },
 
-        loadTableData (table) {
+        loadTableData(table) {
             this.prepareQueryWithFilters(this.databaseActive, table)
                 .select('*')
                 .limit(this.paginateNumber)
@@ -339,20 +339,17 @@ export default {
                 })
         },
 
-        prepareQuery (database, table) {
+        prepareQuery(database, table) {
             database = database || this.databaseActive
             table = table || this.tableActive
 
             return this.knex.withSchema(database).from(table)
         },
 
-        prepareQueryWithFilters (database, table) {
+        prepareQueryWithFilters(database, table) {
             let query = this.prepareQuery()
 
-            if (
-                !this.filter.column ||
-                !this.filter.operator
-            ) {
+            if (!this.filter.column || !this.filter.operator) {
                 return query
             }
 
@@ -381,17 +378,17 @@ export default {
             )
         },
 
-        setRowActive (row) {
+        setRowActive(row) {
             this.rowActive = row
             this.rowForm = _clone(row)
         },
 
-        openRow (row, type = 'update') {
+        openRow(row, type = 'update') {
             this.setRowActive(row)
             this.rowType = type
         },
 
-        createRow () {
+        createRow() {
             let row = {}
 
             this.tableColumns.forEach(column => {
@@ -401,7 +398,7 @@ export default {
             this.openRow(row, 'create')
         },
 
-        submitRow (row) {
+        submitRow(row) {
             let query = this.prepareQuery()
 
             this.rowType == 'update'
@@ -426,7 +423,7 @@ export default {
                 })
         },
 
-        deleteRows (rowsSelected) {
+        deleteRows(rowsSelected) {
             rowsSelected = rowsSelected || this.rowsSelected
 
             rowsSelected.forEach(rowKey => {
@@ -447,12 +444,12 @@ export default {
             this.loadTable(this.tableActive)
         },
 
-        setPaginateNumber (number) {
+        setPaginateNumber(number) {
             this.paginateNumber = number
             this.loadTable()
         },
 
-        setPaginatePage (page) {
+        setPaginatePage(page) {
             this.paginatePage = page
             this.loadTable()
         },

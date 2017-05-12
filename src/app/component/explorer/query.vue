@@ -51,10 +51,7 @@ import AlertMessageMixin from '~/js/mixin/alertMessage'
 export default {
     name: 'Query',
 
-    mixins: [
-        ConnectionMixin,
-        AlertMessageMixin,
-    ],
+    mixins: [ConnectionMixin, AlertMessageMixin],
 
     data: () => ({
         query: null,
