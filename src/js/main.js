@@ -16,6 +16,7 @@ Vue.use(filters)
 
 Vue.directive('highlightjs', {
     deep: true,
+    
     bind: function bind(el, binding) {
         // on first bind, highlight all targets
         const targets = el.querySelectorAll('code')
@@ -31,6 +32,7 @@ Vue.directive('highlightjs', {
             highlightjs.highlightBlock(target)
         }
     },
+
     componentUpdated: function componentUpdated(el, binding) {
         // after an update, re-fill the content and then highlight
         const targets = el.querySelectorAll('code')
