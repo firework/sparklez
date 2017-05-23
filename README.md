@@ -17,16 +17,9 @@ Using Yarn
 
 ```sh
 yarn install
+yarn theme:compile # to compile the theme variables
 yarn dev # or: yarn watch
 yarn start
-```
-
-Using NPM
-
-```sh
-npm install
-npm run dev # or: npm run watch
-npm run start
 ```
 
 ### Development

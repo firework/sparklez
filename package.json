@@ -9,7 +9,7 @@
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
     "prod": "cross-env NODE_ENV=production webpack --hide-modules",
     "start": "electron .",
-    "theme:variables": "et -i ./src/css/element-variables.css",
+    "theme:variables": "rm ./src/css/element-variables.css && et -i ./src/css/element-variables.css",
     "theme:compile": "et -c ./src/css/element-variables.css -o ./src/css/theme",
     "pack:osx": "electron-packager dist Sparklez --out=build --platform=darwin --arch=x64 --build-version=64-bit --icon=src/assets/installer/icon.icns --prune --asar --overwrite",
     "pack:linux": "electron-packager dist Sparklez --out=build --platform=linux --arch=x64 --build-version=64-bit --icon=src/assets/installer/icon.ico --prune --asar --overwrite",
@@ -42,9 +42,8 @@
     }
   },
   "dependencies": {
-    "element-theme": "^0.7.1",
-    "element-theme-default": "^1.3.2",
-    "element-ui": "^1.3.2",
+    "element-theme-default": "^1.3.4",
+    "element-ui": "^1.3.4",
     "font-awesome": "^4.7.0",
     "highlight.js": "^9.11.0",
     "knex": "^0.13.0",
@@ -58,11 +57,12 @@
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^5.0.0",
     "electron": "^1.7.0",
-    "electron-builder": "^17.1.2",
+    "electron-builder": "^17.10.0",
     "electron-packager": "^8.7.0",
+    "element-theme": "^0.7.1",
     "html-webpack-plugin": "^2.28.0",
-    "laravel-mix": "^0.11.4",
-    "webpack": "^2.5.0",
+    "laravel-mix": "^0.12.0",
+    "webpack": "^2.6.0",
     "webpack-dev-server": "^2.4.5"
   }
 }

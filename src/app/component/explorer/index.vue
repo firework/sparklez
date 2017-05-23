@@ -113,7 +113,13 @@
                                         @click="toggleRow(key)"
                                     >
                                         <td v-for="(column, key) in tableColumns" :key="key">
-                                            <div class="cell">{{ row[column.column_name] | str_limit }}</div>
+                                            <!-- @TODO: maybe create a class for each data type to customize -->
+                                            <div
+                                                class="cell"
+                                                :class="{ 'is-nowrap': column.data_type === 'timestamp' }"
+                                            >
+                                                {{ row[column.column_name] | str_limit }}
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -458,6 +464,12 @@ export default {
 </script>
 
 <style lang="scss">
+
+// @TODO: create a new style to generic classes
+.is-nowrap {
+    white-space: nowrap !important;
+}
+
 .explorer {
     padding: 20px;
 
@@ -494,9 +506,5 @@ export default {
 
 .paginate {
     width: auto !important;
-}
-
-.fa-check-square-o {
-    margin-left: 2px;
 }
 </style>
