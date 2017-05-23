@@ -314,6 +314,9 @@ export default {
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,400,400i,700');
+@import './css/theme/index.css';
+@import '~font-awesome/css/font-awesome.css';
+@import '~highlight.js/styles/github.css';
 
 body {
     font-family: 'Roboto', sans-serif;

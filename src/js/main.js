@@ -6,17 +6,12 @@ import App from '~/App.vue'
 import store from './store'
 import filters from './filter'
 
-// styles
-import '~/css/theme/index.css'
-import 'font-awesome/css/font-awesome.css'
-import 'highlight.js/styles/github.css'
-
 Vue.use(ElementUI, { locale })
 Vue.use(filters)
 
 Vue.directive('highlightjs', {
     deep: true,
-    
+
     bind: function bind(el, binding) {
         // on first bind, highlight all targets
         const targets = el.querySelectorAll('code')
