@@ -309,13 +309,11 @@ export default {
         },
 
         loadTableCount(table) {
-            this.prepareQuery(this.databaseActive, table)
-                .count()
-                .then(result => {
-                    result = result[0]
+            this.prepareQuery().count().then(result => {
+                result = result[0]
 
-                    this.setTableCount(result['count(*)'])
-                })
+                this.setTableCount(result['count(*)'])
+            })
         },
 
         loadTableColumns(table) {
@@ -432,22 +430,33 @@ export default {
         deleteRows(rowsSelected) {
             rowsSelected = rowsSelected || this.rowsSelected
 
-            rowsSelected.forEach(rowKey => {
-                let row = this.tableData[rowKey]
+            this.knex
+                .transaction(trx => {
+                    let deletes = rowsSelected.map(rowKey => {
+                        let row = this.tableData[rowKey]
 
-                this.prepareQuery()
-                    .where(row)
-                    .delete()
-                    .then(result => {
-                        // nothing to do here
+                        return this.prepareQuery()
+                            .transacting(trx)
+                            .where(row)
+                            .delete()
                     })
-                    .catch(error => {
-                        console.error(error)
-                    })
-            })
 
-            this.successMessage('Row(s) deleted.')
-            this.loadTable(this.tableActive)
+                    Promise.all(deletes).then(trx.commit).catch(trx.rollback)
+                })
+                .then(
+                    result =>
+                        new Promise(resolve => {
+                            this.successMessage(
+                                `${result.length} Row(s) deleted.`
+                            )
+                            this.loadTable()
+
+                            resolve()
+                        })
+                )
+                .catch(error => {
+                    this.$alert(error, 'Something went wrong!')
+                })
         },
 
         setPaginateNumber(number) {
