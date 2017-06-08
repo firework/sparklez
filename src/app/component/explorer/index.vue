@@ -132,7 +132,7 @@
                     </div>
 
                     <el-dialog
-                        v-model="hasRowActive"
+                        :visible.sync="showDialogEdit"
                         title="Edit Row"
                         @close="setRowActive(null)"
                     >
@@ -234,6 +234,7 @@ export default {
         rowActive: null,
         rowForm: null,
         rowType: 'update',
+        showDialogEdit: false,
     }),
 
     watch: {
@@ -251,7 +252,7 @@ export default {
         },
 
         hasRowActive() {
-            return !!this.rowActive
+            return !! this.rowActive
         },
     },
 
@@ -385,6 +386,7 @@ export default {
         setRowActive(row) {
             this.rowActive = row
             this.rowForm = _clone(row)
+            this.showDialogEdit = !! row;
         },
 
         openRow(row, type = 'update') {
