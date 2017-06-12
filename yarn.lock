@@ -303,7 +303,7 @@ async-foreach@^0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/async-foreach/-/async-foreach-0.1.3.tgz#36121f845c0578172de419a97dbeb1d16ec34542"
 
-async-validator@^1.6.9:
+async-validator@1.6.9:
   version "1.6.9"
   resolved "https://registry.yarnpkg.com/async-validator/-/async-validator-1.6.9.tgz#a8309daa8b83421cdbd4628e026d6abb25192d34"
 
@@ -1819,7 +1819,7 @@ cross-env@^3.1.3:
     cross-spawn "^5.1.0"
     is-windows "^1.0.0"
 
-cross-env@^5.0.0:
+cross-env@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-5.0.1.tgz#ff4e72ea43b47da2486b43a7f2043b2609e44913"
   dependencies:
@@ -2304,22 +2304,22 @@ electron-builder-core@18.7.0:
   version "18.7.0"
   resolved "https://registry.yarnpkg.com/electron-builder-core/-/electron-builder-core-18.7.0.tgz#6f72649fbc6ff7f34e177bcb366bffedb8819175"
 
-electron-builder-http@18.7.0, electron-builder-http@~18.7.0:
-  version "18.7.0"
-  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-18.7.0.tgz#a3154d25c80c62e1e15becaf10770811e338aefe"
+electron-builder-http@18.8.0, electron-builder-http@~18.8.0:
+  version "18.8.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-18.8.0.tgz#ede8bace4fab384a1469b21479296cdcdb4ebec6"
   dependencies:
     debug "2.6.8"
     fs-extra-p "^4.3.0"
 
-electron-builder-util@18.7.0, electron-builder-util@~18.7.0:
-  version "18.7.0"
-  resolved "https://registry.yarnpkg.com/electron-builder-util/-/electron-builder-util-18.7.0.tgz#c75171fdaf672c7a998b6596d64bb08eb7fabef4"
+electron-builder-util@18.8.0, electron-builder-util@~18.8.0:
+  version "18.8.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-util/-/electron-builder-util-18.8.0.tgz#a5c5a47892ae5689b027b98830545dd4527b8aaf"
   dependencies:
     "7zip-bin" "^2.1.0"
     bluebird-lst "^1.0.2"
     chalk "^1.1.3"
     debug "2.6.8"
-    electron-builder-http "~18.7.0"
+    electron-builder-http "~18.8.0"
     fcopy-pre-bundled "^0.1.2"
     fs-extra-p "^4.3.0"
     ini "^1.3.4"
@@ -2329,9 +2329,9 @@ electron-builder-util@18.7.0, electron-builder-util@~18.7.0:
     stat-mode "^0.2.2"
     tunnel-agent "^0.6.0"
 
-electron-builder@^18.0.1:
-  version "18.7.0"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-18.7.0.tgz#ae27cce7aff0314ff566835df6d8af9ac97fd47f"
+electron-builder@^18.6.2:
+  version "18.8.1"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-18.8.1.tgz#3fa29d4e87ae05ebae5986e0dd92bbb34512c18d"
   dependencies:
     "7zip-bin" "^2.1.0"
     ajv "^5.1.5"
@@ -2343,11 +2343,11 @@ electron-builder@^18.0.1:
     cuint "^0.2.2"
     debug "2.6.8"
     electron-builder-core "18.7.0"
-    electron-builder-http "18.7.0"
-    electron-builder-util "18.7.0"
+    electron-builder-http "18.8.0"
+    electron-builder-util "18.8.0"
     electron-download-tf "4.3.1"
     electron-osx-sign "0.4.6"
-    electron-publish "18.7.0"
+    electron-publish "18.8.0"
     fs-extra-p "^4.3.0"
     hosted-git-info "^2.4.2"
     is-ci "^1.0.10"
@@ -2419,7 +2419,7 @@ electron-osx-sign@0.4.6, electron-osx-sign@^0.4.1:
     plist "^2.0.1"
     tempfile "^1.1.1"
 
-electron-packager@^8.7.0:
+electron-packager@^8.7.1:
   version "8.7.1"
   resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-8.7.1.tgz#22607a44116cb4c1bce72246783990cae4fcf903"
   dependencies:
@@ -2438,14 +2438,14 @@ electron-packager@^8.7.0:
     sanitize-filename "^1.6.0"
     semver "^5.3.0"
 
-electron-publish@18.7.0:
-  version "18.7.0"
-  resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-18.7.0.tgz#feeee7fa3e71fbbf8fe61a8dc6c2e483c98ec3e7"
+electron-publish@18.8.0:
+  version "18.8.0"
+  resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-18.8.0.tgz#1f7ff38e9dc591c11cd81caf7ff2be9578286bc9"
   dependencies:
     bluebird-lst "^1.0.2"
     chalk "^1.1.3"
-    electron-builder-http "~18.7.0"
-    electron-builder-util "~18.7.0"
+    electron-builder-http "~18.8.0"
+    electron-builder-util "~18.8.0"
     fs-extra-p "^4.3.0"
     mime "^1.3.6"
 
@@ -2461,11 +2461,11 @@ electron@^1.7.0:
     electron-download "^3.0.1"
     extract-zip "^1.0.3"
 
-element-theme-default@^1.3.4:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/element-theme-default/-/element-theme-default-1.3.5.tgz#470f8a2adfbf0d18f4151b47acc7f30153431ed6"
+element-theme-default@^1.3.5:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/element-theme-default/-/element-theme-default-1.3.6.tgz#a91a359d3f47fca8d6f7df3d446fe8ed8542bece"
 
-element-theme@^0.7.1:
+element-theme@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/element-theme/-/element-theme-0.7.2.tgz#728463478bb8db66cdd4ec5dc518b48008d2eae2"
   dependencies:
@@ -2479,11 +2479,11 @@ element-theme@^0.7.1:
     run-sequence "^1.2.2"
     through2 "^2.0.3"
 
-element-ui@^1.3.4:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-1.3.5.tgz#b2bae0bd09cff986ead0d1b12c5541eba7802823"
+element-ui@^1.3.5:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-1.3.6.tgz#318c13be7e6f6b09b4831caf1bcadbb0ef135ad9"
   dependencies:
-    async-validator "^1.6.9"
+    async-validator "1.6.9"
     babel-helper-vue-jsx-merge-props "^2.0.0"
     deepmerge "^1.2.0"
     throttle-debounce "^1.0.1"
@@ -3669,7 +3669,7 @@ he@1.1.x, he@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/he/-/he-1.1.1.tgz#93410fd21b009735151f8868c2f271f3427e23fd"
 
-highlight.js@^9.11.0:
+highlight.js@^9.12.0:
   version "9.12.0"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.12.0.tgz#e6d9dbe57cbefe60751f02af336195870c90c01e"
 
@@ -4373,7 +4373,7 @@ knex@^0.13.0:
     uuid "^3.0.0"
     v8flags "^2.0.2"
 
-laravel-mix@^0.12.0:
+laravel-mix@^0.12.1:
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/laravel-mix/-/laravel-mix-0.12.1.tgz#2b4a5b123ce4bc9167eea49461b7567ae2921503"
   dependencies:
@@ -8002,7 +8002,7 @@ vue-template-es2015-compiler@^1.2.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.5.2.tgz#a0a6c50c941d2a4abda963f2f42c337ac450ee95"
 
-vue@^2.3.3:
+vue@^2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.3.4.tgz#5ec3b87a191da8090bbef56b7cfabd4158038171"
 
