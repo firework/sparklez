@@ -5,9 +5,9 @@
   "main": "dist/electron.js",
   "version": "0.0.6",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
-    "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
-    "prod": "cross-env NODE_ENV=production webpack --hide-modules",
+    "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "cross-env NODE_ENV=production webpack --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "start": "electron .",
     "theme:variables": "rm ./src/css/element-variables.css && et -i ./src/css/element-variables.css",
     "theme:compile": "et -c ./src/css/element-variables.css -o ./src/css/theme",
