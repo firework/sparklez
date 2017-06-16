@@ -30,25 +30,25 @@
 
                     <el-form :model="connection">
                         <el-form-item>
-                            <el-input placeholder="localhost" v-model="connection.name">
+                            <el-input placeholder="localhost" v-model="connection.name" name="name">
                                 <template slot="prepend"><i class="fa fa-fw fa-tag"></i> Name</template>
                             </el-input>
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="127.0.0.1" v-model="connection.host">
+                            <el-input placeholder="127.0.0.1" v-model="connection.host" name="host">
                                 <template slot="prepend"><i class="fa fa-fw fa-server"></i> Host</template>
                             </el-input>
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="3306" v-model="connection.port">
+                            <el-input placeholder="3306" v-model="connection.port" name="port">
                                 <template slot="prepend"><i class="fa fa-fw fa-random"></i> Port</template>
                             </el-input>
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="root" v-model="connection.user">
+                            <el-input placeholder="root" v-model="connection.user" name="user">
                                 <template slot="prepend"><i class="fa fa-fw fa-user"></i> User</template>
                             </el-input>
                         </el-form-item>
@@ -58,6 +58,7 @@
                                 placeholder="secret"
                                 type="password"
                                 v-model="connection.password"
+                                name="password">
                             >
                                 <template slot="prepend"><i class="fa fa-fw fa-lock"></i> Password</template>
                             </el-input>
@@ -74,7 +75,6 @@
                                 <el-button
                                     type="primary"
                                     @click="saveAsFavorite()"
-                                    :disabled="!hasConnectionData"
                                 >
                                     <i class="fa fa-fw fa-star"></i> Save as favorite
                                 </el-button>
@@ -82,7 +82,6 @@
                                 <el-button
                                     type="primary"
                                     @click="testConnection()"
-                                    :disabled="!hasConnectionData"
                                 >
                                     <i class="fa fa-fw fa-bolt"></i> Test connection
                                 </el-button>
@@ -90,7 +89,6 @@
                                 <el-button
                                     type="primary"
                                     @click="connect()"
-                                    :disabled="!hasConnectionData"
                                 >
                                     <i class="fa fa-fw fa-plug"></i> Connect
                                 </el-button>
@@ -107,7 +105,7 @@
                     <li class="el-menu-item">
                         <el-select
                             v-model="databaseActive"
-                            @change="loadTables"
+                            @input="loadTables"
                             filterable
                             placeholder="Select database"
                         >
@@ -163,6 +161,13 @@ export default {
         databases: [],
         tables: [],
         tableFilter: '',
+        rules: {
+            password: [{
+                required: true,
+                message: 'Please input password',
+                trigger: 'blur'
+            }]
+        },
     }),
 
     computed: {
@@ -170,16 +175,6 @@ export default {
             return this.tables.filter(
                 table =>
                     !this.tableFilter || table.indexOf(this.tableFilter) !== -1
-            )
-        },
-
-        hasConnectionData() {
-            return (
-                !!this.connection.name &&
-                !!this.connection.host &&
-                !!this.connection.port &&
-                !!this.connection.user &&
-                !!this.connection.password
             )
         },
     },
@@ -231,48 +226,68 @@ export default {
             this.setKnex(knex)
         },
 
+        setPlaceholderValues() {
+            let inputs = [].slice.call(document.getElementsByTagName('input'))
+
+            inputs.map((field) => {
+                if (field.value == '') {
+                    field.value = field.placeholder
+                    this.connection[field.name] = field.value
+                }
+            })
+        },
+
         // TODO: think a better way to test connection
         testConnection() {
-            this.knex = this.knex || this.getKnex()
+            this.setPlaceholderValues()
+            this.knex = this.getKnex()
 
-            this.knex
-                .raw('select 1+1 as result')
-                .then(() => {
-                    this.connection.tested = true
-                    this.successMessage('Connection accepted.')
-                })
-                .catch(error => {
-                    this.connection.tested = false
-                    this.errorMessage('Connection refused.')
-                    console.error(error)
-                })
+            return new Promise((resolve, reject) => {
+                this.knex
+                    .raw('select 1 as dbOn')
+                    .then(() => {
+                        this.connection.tested = true
+                        this.successMessage('Connection accepted.')
+                        resolve()
+                    })
+                    .catch(error => {
+                        this.connection.tested = false
+                        this.errorMessage('Connection refused.')
+                        reject(error)
+                    })
+            });
         },
 
         connect() {
-            this.knex = this.knex || this.getKnex()
+            this.testConnection()
+                .then(() => {
+                    this.updatePropertyConnection({
+                        property: 'active',
+                        value: true
+                    })
 
-            this.updatePropertyConnection({ property: 'active', value: true })
+                    this.knex.on('query', data => {
+                        // pluck are the internal queries to get databases, tables and columns
+                        if (data.method === 'pluck') return
 
-            this.knex.on('query', data => {
-                // pluck are the internal queries to get databases, tables and columns
-                if (data.method === 'pluck') return
+                        let index = 0
 
-                let index = 0
+                        this.setQueryLog({
+                            ranAt: new Date(),
+                            sql: data.sql.replace(/\?/g, () => {
+                                let value = data.bindings[index++]
 
-                this.setQueryLog({
-                    ranAt: new Date(),
-                    sql: data.sql.replace(/\?/g, () => {
-                        let value = data.bindings[index++]
+                                return _isNumber(value) || _isNull(value) ?
+                                    value :
+                                    `'${value}'`
+                            }),
+                        })
+                    })
 
-                        return _isNumber(value) || _isNull(value)
-                            ? value
-                            : `'${value}'`
-                    }),
+                    this.setConnection(this.connection)
+                    this.loadDatabases()
                 })
-            })
-
-            this.setConnection(this.connection)
-            this.loadDatabases()
+                .catch((e) => console.log(e))
         },
 
         changeTableActive(table) {
@@ -288,12 +303,13 @@ export default {
                 })
 
                 this.setDatabaseActive(this.connection.database)
+                if (this.databases.includes(this.connection.database)) this.loadTables(this.connection.database)
             })
         },
 
         loadTables(database) {
             database = database || this.databaseActive
-
+            this.setDatabaseActive(database)
             this.knex
                 .select('table_name')
                 .from('information_schema.tables')
