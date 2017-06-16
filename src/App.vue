@@ -30,25 +30,25 @@
 
                     <el-form :model="connection">
                         <el-form-item>
-                            <el-input placeholder="localhost" v-model="connection.name" name="name">
+                            <el-input placeholder="localhost" v-model="connection.name">
                                 <template slot="prepend"><i class="fa fa-fw fa-tag"></i> Name</template>
                             </el-input>
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="127.0.0.1" v-model="connection.host" name="host">
+                            <el-input placeholder="127.0.0.1" v-model="connection.host">
                                 <template slot="prepend"><i class="fa fa-fw fa-server"></i> Host</template>
                             </el-input>
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="3306" v-model="connection.port" name="port">
+                            <el-input placeholder="3306" v-model="connection.port">
                                 <template slot="prepend"><i class="fa fa-fw fa-random"></i> Port</template>
                             </el-input>
                         </el-form-item>
 
                         <el-form-item>
-                            <el-input placeholder="root" v-model="connection.user" name="user">
+                            <el-input placeholder="root" v-model="connection.user">
                                 <template slot="prepend"><i class="fa fa-fw fa-user"></i> User</template>
                             </el-input>
                         </el-form-item>
@@ -58,7 +58,7 @@
                                 placeholder="secret"
                                 type="password"
                                 v-model="connection.password"
-                                name="password">
+                                >
                             >
                                 <template slot="prepend"><i class="fa fa-fw fa-lock"></i> Password</template>
                             </el-input>
@@ -141,7 +141,12 @@
 
 <script>
 import Knex from 'knex'
-import { isNull as _isNull, isNumber as _isNumber, omit as _omit } from 'lodash'
+import {
+    isNull as _isNull,
+    isNumber as _isNumber,
+    omit as _omit,
+    get as _get,
+} from 'lodash'
 import componentAsync from '~/js/componentAsync'
 import AppExplorer from '~/app/component/explorer/index'
 import ConnectionMixin from '~/js/mixin/connection'
@@ -168,6 +173,14 @@ export default {
                 trigger: 'blur'
             }]
         },
+        defaultConnection: {
+            name: 'localhost',
+            host: '127.0.0.1',
+            port: '3306',
+            user: 'root',
+            active: false,
+            tested: false,
+        }
     }),
 
     computed: {
@@ -226,36 +239,29 @@ export default {
             this.setKnex(knex)
         },
 
-        setPlaceholderValues() {
-            let inputs = [].slice.call(document.getElementsByTagName('input'))
+        setDefaultValues() {
+            this.replaceEmpty(this.connection, this.defaultConnection)
+            this.setConnection(this.connection)
+        },
 
-            inputs.map((field) => {
-                if (field.value == '') {
-                    field.value = field.placeholder
-                    this.connection[field.name] = field.value
-                }
-            })
+        replaceEmpty(obj, def) {
+            for (var prop in obj) {
+                if (obj[prop]) continue;
+
+                obj[prop] = def[prop]
+            }
         },
 
         // TODO: think a better way to test connection
         testConnection() {
-            this.setPlaceholderValues()
+            this.setDefaultValues()
             this.knex = this.getKnex()
 
-            return new Promise((resolve, reject) => {
-                this.knex
-                    .raw('select 1 as dbOn')
-                    .then(() => {
-                        this.connection.tested = true
-                        this.successMessage('Connection accepted.')
-                        resolve()
-                    })
-                    .catch(error => {
-                        this.connection.tested = false
-                        this.errorMessage('Connection refused.')
-                        reject(error)
-                    })
-            });
+            return this.loadDatabases()
+                            .then(() => {
+                                this.connection.tested = true
+                                this.successMessage('Connection accepted.')
+                            })
         },
 
         connect() {
@@ -284,10 +290,9 @@ export default {
                         })
                     })
 
-                    this.setConnection(this.connection)
                     this.loadDatabases()
                 })
-                .catch((e) => console.log(e))
+                .catch((e) => this.errorMessage(e))
         },
 
         changeTableActive(table) {
@@ -297,13 +302,13 @@ export default {
         },
 
         loadDatabases() {
-            this.knex.raw('show databases').then(databases => {
-                this.databases = databases[0].map(function(db) {
-                    return db.Database
-                })
-
+            return this.knex.raw('show databases').then(databases => {
+                this.databases = databases[0].map(db => db.Database)
                 this.setDatabaseActive(this.connection.database)
-                if (this.databases.includes(this.connection.database)) this.loadTables(this.connection.database)
+
+                if (this.databases.includes(this.connection.database)) {
+                    this.loadTables(this.connection.database)
+                }
             })
         },
 
