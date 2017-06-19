@@ -58,7 +58,6 @@
                                 placeholder="secret"
                                 type="password"
                                 v-model="connection.password"
-                                >
                             >
                                 <template slot="prepend"><i class="fa fa-fw fa-lock"></i> Password</template>
                             </el-input>
@@ -291,6 +290,7 @@ export default {
                     })
 
                     this.loadDatabases()
+                    return true
                 })
                 .catch((e) => this.errorMessage(e))
         },
@@ -309,6 +309,7 @@ export default {
                 if (this.databases.includes(this.connection.database)) {
                     this.loadTables(this.connection.database)
                 }
+                return true
             })
         },
 

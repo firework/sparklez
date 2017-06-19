@@ -23,7 +23,7 @@
                     type="primary"
                     icon="delete"
                     :disabled="rowsSelected.length === 0"
-                    @click="deleteRows()"
+                    @click="confirmDelete()"
                 >
                     Delete
                 </el-button>
@@ -264,6 +264,16 @@ export default {
             this.rowActive = null
 
             this.resetConnectionState()
+        },
+
+        confirmDelete() {
+            this.$confirm('This will permanently delete the row. Continue?', 'Warning', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+           }).then(() => {
+                this.deleteRows()
+           }).catch(() => {});
         },
 
         disconnect() {
