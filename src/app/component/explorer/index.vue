@@ -191,6 +191,7 @@ import {
     without as _without,
     clone as _clone,
 } from 'lodash'
+import Vue from 'vue'
 import componentAsync from '~/js/componentAsync'
 import AppStructure from './structure'
 import AppQuery from './query'
@@ -398,7 +399,7 @@ export default {
             let row = {}
 
             this.tableColumns.forEach(column => {
-                row[column] = null
+                row[column.column_name] = null
             })
 
             this.openRow(row, 'create')
@@ -424,7 +425,7 @@ export default {
                 })
                 .catch(error => {
                     this.setRowActive(null)
-                    this.errorMessage('Something went wrong.')
+                    this.$alert(error.message.split(':')[1], 'Something went wrong!')
                     console.error(error)
                 })
         },
@@ -457,7 +458,7 @@ export default {
                         })
                 )
                 .catch(error => {
-                    this.$alert(error, 'Something went wrong!')
+                    this.$alert(error.message.split(':')[1], 'Something went wrong!')
                 })
         },
 
