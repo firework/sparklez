@@ -74,7 +74,6 @@
                                 <el-button
                                     type="primary"
                                     @click="saveAsFavorite()"
-                                    :disabled="!hasConnectionData"
                                 >
                                     <i class="fa fa-fw fa-star"></i> Save as favorite
                                 </el-button>
@@ -82,7 +81,6 @@
                                 <el-button
                                     type="primary"
                                     @click="testConnection()"
-                                    :disabled="!hasConnectionData"
                                 >
                                     <i class="fa fa-fw fa-bolt"></i> Test connection
                                 </el-button>
@@ -90,7 +88,6 @@
                                 <el-button
                                     type="primary"
                                     @click="connect()"
-                                    :disabled="!hasConnectionData"
                                 >
                                     <i class="fa fa-fw fa-plug"></i> Connect
                                 </el-button>
@@ -107,7 +104,7 @@
                     <li class="el-menu-item">
                         <el-select
                             v-model="databaseActive"
-                            @change="loadTables"
+                            @input="loadTables"
                             filterable
                             placeholder="Select database"
                         >
@@ -143,7 +140,12 @@
 
 <script>
 import Knex from 'knex'
-import { isNull as _isNull, isNumber as _isNumber, omit as _omit } from 'lodash'
+import {
+    isNull as _isNull,
+    isNumber as _isNumber,
+    omit as _omit,
+    get as _get,
+} from 'lodash'
 import componentAsync from '~/js/componentAsync'
 import AppExplorer from '~/app/component/explorer/index'
 import ConnectionMixin from '~/js/mixin/connection'
@@ -163,6 +165,21 @@ export default {
         databases: [],
         tables: [],
         tableFilter: '',
+        rules: {
+            password: [{
+                required: true,
+                message: 'Please input password',
+                trigger: 'blur'
+            }]
+        },
+        defaultConnection: {
+            name: 'localhost',
+            host: '127.0.0.1',
+            port: '3306',
+            user: 'root',
+            active: false,
+            tested: false,
+        }
     }),
 
     computed: {
@@ -170,16 +187,6 @@ export default {
             return this.tables.filter(
                 table =>
                     !this.tableFilter || table.indexOf(this.tableFilter) !== -1
-            )
-        },
-
-        hasConnectionData() {
-            return (
-                !!this.connection.name &&
-                !!this.connection.host &&
-                !!this.connection.port &&
-                !!this.connection.user &&
-                !!this.connection.password
             )
         },
     },
@@ -231,48 +238,61 @@ export default {
             this.setKnex(knex)
         },
 
+        setDefaultValues() {
+            this.replaceEmpty(this.connection, this.defaultConnection)
+            this.setConnection(this.connection)
+        },
+
+        replaceEmpty(obj, def) {
+            for (var prop in obj) {
+                if (obj[prop]) continue;
+
+                obj[prop] = def[prop]
+            }
+        },
+
         // TODO: think a better way to test connection
         testConnection() {
-            this.knex = this.knex || this.getKnex()
+            this.setDefaultValues()
+            this.knex = this.getKnex()
 
-            this.knex
-                .raw('select 1+1 as result')
-                .then(() => {
-                    this.connection.tested = true
-                    this.successMessage('Connection accepted.')
-                })
-                .catch(error => {
-                    this.connection.tested = false
-                    this.errorMessage('Connection refused.')
-                    console.error(error)
-                })
+            return this.loadDatabases()
+                            .then(() => {
+                                this.connection.tested = true
+                                this.successMessage('Connection accepted.')
+                            })
         },
 
         connect() {
-            this.knex = this.knex || this.getKnex()
+            this.testConnection()
+                .then(() => {
+                    this.updatePropertyConnection({
+                        property: 'active',
+                        value: true
+                    })
 
-            this.updatePropertyConnection({ property: 'active', value: true })
+                    this.knex.on('query', data => {
+                        // pluck are the internal queries to get databases, tables and columns
+                        if (data.method === 'pluck') return
 
-            this.knex.on('query', data => {
-                // pluck are the internal queries to get databases, tables and columns
-                if (data.method === 'pluck') return
+                        let index = 0
 
-                let index = 0
+                        this.setQueryLog({
+                            ranAt: new Date(),
+                            sql: data.sql.replace(/\?/g, () => {
+                                let value = data.bindings[index++]
 
-                this.setQueryLog({
-                    ranAt: new Date(),
-                    sql: data.sql.replace(/\?/g, () => {
-                        let value = data.bindings[index++]
+                                return _isNumber(value) || _isNull(value) ?
+                                    value :
+                                    `'${value}'`
+                            }),
+                        })
+                    })
 
-                        return _isNumber(value) || _isNull(value)
-                            ? value
-                            : `'${value}'`
-                    }),
+                    this.loadDatabases()
+                    return true
                 })
-            })
-
-            this.setConnection(this.connection)
-            this.loadDatabases()
+                .catch((e) => this.errorMessage(e))
         },
 
         changeTableActive(table) {
@@ -282,18 +302,20 @@ export default {
         },
 
         loadDatabases() {
-            this.knex.raw('show databases').then(databases => {
-                this.databases = databases[0].map(function(db) {
-                    return db.Database
-                })
-
+            return this.knex.raw('show databases').then(databases => {
+                this.databases = databases[0].map(db => db.Database)
                 this.setDatabaseActive(this.connection.database)
+
+                if (this.databases.includes(this.connection.database)) {
+                    this.loadTables(this.connection.database)
+                }
+                return true
             })
         },
 
         loadTables(database) {
             database = database || this.databaseActive
-
+            this.setDatabaseActive(database)
             this.knex
                 .select('table_name')
                 .from('information_schema.tables')

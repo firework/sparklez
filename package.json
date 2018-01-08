@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "element-theme-default": "^1.3.5",
-    "element-ui": "^1.3.5",
+    "element-ui": "^1.3.6",
     "font-awesome": "^4.7.0",
     "highlight.js": "^9.12.0",
     "knex": "^0.13.0",
@@ -56,7 +56,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^5.0.1",
-    "electron": "^1.7.0",
+    "electron": "^1.6.11",
     "electron-builder": "^18.6.2",
     "electron-packager": "^8.7.1",
     "element-theme": "^0.7.2",
