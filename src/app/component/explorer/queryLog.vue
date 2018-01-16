@@ -1,5 +1,5 @@
 <template>
-    <div class="el-table" id="query-log">
+    <div id="query-log" class="el-table">
         <table class="el-table__body" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>

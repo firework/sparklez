@@ -12,7 +12,7 @@
 
             <el-form-item>
                 <el-button
-                    type="primary"
+                    :plain="true"
                     @click="executeQuery()"
                 >
                     Execute Query
@@ -65,14 +65,23 @@ export default {
                 .raw(this.query)
                 .then(result => {
                     // MySQL resturns and array and the first key has the result
-                    result = result[0]
+                    result = result[0];
 
+                    // For SELECT
                     if (result.length) {
                         this.queryColumns = Object.keys(result[0])
                         this.queryData = result
+                        console.log(this.queryColumns);
+                        console.log(this.queryData);
+
+                        this.successMessage(`Query executed! ${result.length} row(s) affected`);
+
+                    // For INSERT/UPDATE/DELETE
                     } else {
                         this.queryColumns = []
                         this.queryData = []
+                        this.successMessage(`Query executed! ${result.affectedRows} row(s) affected`);
+
                     }
                 })
                 .catch(error => {

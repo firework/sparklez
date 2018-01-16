@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import ElementTheme from 'element-theme-default'
 import locale from 'element-ui/lib/locale/lang/en'
 import highlightjs from 'highlight.js'
 import App from '~/App.vue'
@@ -7,6 +9,7 @@ import store from './store'
 import filters from './filter'
 
 Vue.use(ElementUI, { locale })
+Vue.use(ElementTheme)
 Vue.use(filters)
 
 Vue.directive('highlightjs', {
