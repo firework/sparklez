@@ -12,7 +12,7 @@
                                 @click="setFavorite(favorite)"
                             >
                                 <i class="fa fa-fw fa-database"></i>
-                                <span v-text="favorite.name"></span>
+                                <span v-text="favorite.database"></span>
                                 <i class="fa fa-fw fa-times" @click.stop="removeFavorite(key)"></i>
                             </el-menu-item>
 
@@ -148,79 +148,98 @@
                     <el-dialog
                         :visible.sync="showDialogCreate"
                         :title="dialogTitle"
+                        :close-on-click-modal="false"
                         @click="closeModal()"
                     >
-                        <el-form :rules="rules">
+                        <div class="form_holder">
                             <div v-if="showAddInput">
-                                <el-form-item key="add" label="Name" prop="firstName">
-                                    <el-input type="text" v-model="newName"></el-input>
-                                </el-form-item>
+                                <el-form :model="newName" :rules="ruleName">
+                                    <el-form-item key="add" label="Name" prop="name">
+                                        <el-input type="text" v-model="newName.name"></el-input>
+                                    </el-form-item>
+                                </el-form>
 
-                                <el-form-item>
-                                    <div v-if="(dataType == 'table' ? true : false)">
-                                        <table class="db_column_table" cellspacing="0">
-                                            <tr>
-                                                <th colspan="3">
-                                                    <span class="required">*</span>
-                                                    Columns info
-                                                </th>
-                                            </tr>
-                                            <tr v-for="(row, index) in inputColumn" :key="index" class="db_column_table_item">
-                                                <td>
-                                                    <el-form-item prop="name">
-                                                        <el-input placeholder="Name" type="text" v-model="row.name"></el-input>
-                                                    </el-form-item>
-                                                </td>
-                                                <td>
-                                                    <el-form-item prop="type">
-                                                        <el-input placeholder="Type" type="text" v-model="row.type"></el-input>
-                                                    </el-form-item>
-                                                </td>
+                                <div v-if="(dataType == 'table' ? true : false)">
+                                    <table class="db_column_table" cellspacing="0">
+                                        <tr>
+                                            <th colspan="3">
+                                                <span class="required">*</span>
+                                                Columns info
+                                            </th>
+                                        </tr>
+                                        <tr v-for="(row, index) in inputColumn" :key="index">
+                                            <el-form :model="row" :rules="ruleRow">
+                                                <el-form-item>
+                                                    <tr class="db_column_table_item">
+                                                        <td>
+                                                            <el-form-item prop="name">
+                                                                <el-input placeholder="Name" v-model="row.name"></el-input>
+                                                            </el-form-item>
+                                                        </td>
+                                                        <td>
+                                                            <el-form-item prop="type">
+                                                                <el-input placeholder="Type" v-model="row.type"></el-input>
+                                                            </el-form-item>
+                                                        </td>
 
-                                                <td>
-                                                    <el-button type="danger" plain @click="removeRow(index)">
-                                                        <i class="fa fa-times"></i>
-                                                    </el-button>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <el-button plain @click="addColumn(inputColumn)">New column</el-button>
-                                    </div>
-                                 </el-form-item>
+                                                        <td>
+                                                            <el-button type="danger" plain @click="removeRow(index)">
+                                                                <i class="fa fa-times"></i>
+                                                            </el-button>
+                                                        </td>
+                                                    </tr>
+                                                </el-form-item>
+                                            </el-form>
+                                        </tr>
+                                    </table>
+                                    <el-button plain @click="addColumn()">New column</el-button>
+                                </div>
                             </div>
 
-
-                            <el-form-item key="delete" label="Name" v-else prop="select">
-
-                                <el-select
+                            <div v-else>
+                                <el-form
                                     v-if="(dataType == 'table' ? true : false)"
-                                    v-model="value"
-                                    filterable
+                                    :model="tableSelected"
+                                    :rules="ruleTable"
                                 >
-                                    <el-option key="placeholder" :value="resetSelected"></el-option>
-                                    <el-option
-                                        v-for="table in tables"
-                                        :key="table"
-                                        :label="table"
-                                        :value="table"
-                                    ></el-option>
-                                </el-select>
+                                    <el-form-item key="delete" label="Name" prop="select">
+                                        <el-select
+                                            v-model="tableSelected.select"
+                                            filterable
+                                        >
+                                            <el-option key="placeholder" :value="resetSelected"></el-option>
+                                            <el-option
+                                                v-for="table in tables"
+                                                :key="table"
+                                                :label="table"
+                                                :value="table"
+                                            ></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-form>
 
-                                <el-select
+                                <el-form
                                     v-else
-                                    v-model="computedDatabaseActiveDialog"
-                                    filterable
+                                    :model="databaseSelected"
+                                    :rules="ruleTable"
                                 >
-                                    <el-option key="placeholder" :value="resetSelected"></el-option>
-                                    <el-option
-                                        v-for="database in databases"
-                                        :key="database"
-                                        :label="database"
-                                        :value="database"
-                                    ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-form>
+                                    <el-form-item label="Name" prop="select">
+                                        <el-select
+                                            v-model="databaseSelected.select"
+                                            filterable
+                                        >
+                                            <el-option key="placeholder" :value="resetSelected"></el-option>
+                                            <el-option
+                                                v-for="database in databases"
+                                                :key="database"
+                                                :label="database"
+                                                :value="database"
+                                            ></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
+                        </div>
 
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="closeModal()">Cancel</el-button>
@@ -295,18 +314,36 @@ export default {
             password: [
                 { required: true, message: 'Please input password', trigger: 'blur'}
             ],
-            firstName: [
+        },
+        ruleName: {
+            name: [
                 { required: true, message: 'Please input the name', trigger: 'blur'}
             ],
+        },
+        ruleRow: {
             name: [
                 { required: true, message: 'Please input the column name', trigger: 'blur'}
             ],
             type: [
                 { required: true, message: 'Please input the column type', trigger: 'blur'}
             ],
+        },
+        ruleTable: {
             select: [
                 { required: true, message: 'Please select', trigger: 'change'}
             ],
+        },
+        newName: {
+            name: '',
+        },
+        inputColumn: [
+            {id: '', name: '', type: ''},
+        ],
+        tableSelected: {
+            select: '',
+        },
+        databaseSelected: {
+            select: '',
         },
         defaultConnection: {
             name: 'localhost',
@@ -316,40 +353,23 @@ export default {
             active: false,
             tested: false,
         },
-        newName: null,
         showDialogCreate: false,
         dialogTitle: '',
         showAddInput: '',
         dataType: '',
         resetSelected: 'Select',
-        inputColumn: [
-            {id: '', name: '', type: ''},
-        ],
         index: 0,
-        value: '',
-
     }),
 
     computed: {
         tablesFiltered() {
             return this.tables.filter(
-                table =>
-                    !this.tableFilter || table.indexOf(this.tableFilter) !== -1
+                table => !this.tableFilter || table.indexOf(this.tableFilter) !== -1
             )
+            this.loadDatabases();
         },
 
         computedDatabaseActive: {
-            get () {
-                return this.databaseActive;
-            },
-
-            set (newValue) {
-                this.setDatabaseActive(newValue);
-                this.loadTables(newValue);
-            },
-        },
-
-        computedDatabaseActiveDialog: {
             get () {
                 return this.databaseActive;
             },
@@ -381,8 +401,8 @@ export default {
     },
 
     methods: {
-        addColumn (inputColumn) {
-            this.inputColumn.push({id:(this.index++), name:"", type: ''});
+        addColumn () {
+            this.inputColumn.push({id:(this.index++), name:'', type: ''});
         },
 
         removeRow (row) {
@@ -398,7 +418,7 @@ export default {
 
         closeModal () {
             this.showDialogCreate = false;
-            this.newName = null;
+            this.newName.name = null;
         },
 
         capitalize (word) {
@@ -430,31 +450,27 @@ export default {
             type = (this.dataType == 'database') ? 'DATABASE ' : 'TABLE ';
 
             // PARA ADICIONAR DATABASE E TABLE
-            if (this.newName) {
+            if (this.newName.name) {
 
                 if (this.dataType == "table") {
-                    query = action + type + this.newName + " ( " + this.getElementsColumns(this.inputColumn) + " );";
-
+                    query = action + type + this.newName.name + " ( " + this.getElementsColumns(this.inputColumn) + " );";
                     this.sendQuery(query, ' table created!', 'Table already exists');
                 }
                 else {
-                    query = action + type + this.newName + ";";
-
+                    query = action + type + this.newName.name + ";";
                     this.sendQuery(query, ' database created!', 'Database already exists');
                 }
             }
 
             // PARA DELETAR DATABASE E TABLE
-            else if (this.computedDatabaseActiveDialog || this.value) {
+            else if (this.tableSelected.select || this.databaseSelected.select) {
 
                 if (this.dataType == "table") {
-                    query = action + type + this.value + ";";
-
+                    query = action + type + this.tableSelected.select + ";";
                     this.sendQuery(query, ' table deleted!', 'Something went wrong.');
                 }
                 else {
-                    query = action + type + this.computedDatabaseActiveDialog + ";";
-
+                    query = action + type + this.databaseSelected.select + ";";
                     this.sendQuery(query, ' database deleted!', 'Something went wrong.');
                 }
             }
@@ -465,8 +481,10 @@ export default {
             this.knex.raw(query).then(result => {
                 console.log()
                 result = result[0];
-                rows = (this.newName && this.dataType == 'database') ? `${result.affectedRows}` : `${result.affectedRows+1}`;
+                rows = (this.newName.name && this.dataType == 'database') ? `${result.affectedRows}` : `${result.affectedRows+1}`;
                 this.successMessage(rows + success);
+
+                this.loadDatabases();
             })
             .catch(error => {
                 this.errorMessage(failure);
@@ -566,8 +584,6 @@ export default {
             }
 
             this.setTableActive(table);
-            // this.setDatabaseActive(this.connection.database);
-
         },
 
         loadDatabases() {
@@ -605,7 +621,6 @@ export default {
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,400,400i,700');
-// @import './css/theme/index.css';
 @import '~font-awesome/css/font-awesome.css';
 @import '~highlight.js/styles/github.css';
 
@@ -625,12 +640,9 @@ body {
 .db_column_table {
     width: 100%;
 
-    th {
-        text-align: left;
-    }
+    th { text-align: left; }
 
     .db_column_table_item {
-        margin-bottom: 16px;
         display: table;
         width: 100%;
     }
@@ -641,23 +653,18 @@ body {
     background-color: #eef1f6;
 }
 
-.el-select {
-    width: 100%;
-}
+.el-select { width: 100%; }
 
 .add-delete-buttons {
-    display: block;
-    margin: 20px auto 10px;
-    width: 157px;
+    padding-left: 20px;
+    margin-top: 20px;
+    padding-right: 20px;
+    width: auto;
 
-    .el-button+.el-button {
-        margin-left: 0px;
-    }
+    .el-button+.el-button { margin-left: 0px; }
 }
 
-.required {
-    color: #ff4949;
-}
+.required { color: #ff4949;}
 
 .initial-buttons {
     padding-right: 9px;
@@ -665,15 +672,13 @@ body {
     position: relative;
     margin: 0;
 
-    .second-icon {
-        font-size: 18px;
-    }
+    .second-icon { font-size: 18px; }
+
     .first-icon {
         font-size: 13px;
         position: absolute;
         bottom: 3px;
         left: 3px;
     }
-
 }
 </style>

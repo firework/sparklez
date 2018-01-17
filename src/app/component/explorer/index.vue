@@ -129,40 +129,19 @@
                                 </table>
                             </div>
 
-
                             <div class="el-table__empty-block" v-if="tableData.length === 0">
                                 <span class="el-table__empty-text">No result</span>
                             </div>
                         </div>
-
-
-                        <!-- <el-table
-                            :data="tableData"
-                            :row-key="getKey"
-                            :row-class-name="getClass"
-                            border=""
-                            style="width: 100%"
-                            @row-click="toggleRow(getKey)"
-                            @row-dblclick="openRow(getRow(tableData), 'Edit Row')"
-                        >
-                            <el-table-column
-                                v-for="(row, key) in tableColumns"
-                                :prop="row.column_name"
-                                :label="row.column_name"
-                                :key="key"
-                            >{{ getRow (tableData) }}</el-table-column>
-                        </el-table> -->
                     </div>
 
                     <el-dialog
                         :visible.sync="showDialogEdit"
                         :title="title"
+                        :close-on-click-modal="false"
                         @close="setRowActive(null)"
                     >
-                        <el-form
-                            v-if="hasRowActive"
-                            :model="rowForm"
-                        >
+                        <el-form v-if="hasRowActive" :model="rowForm">
                             <el-form-item
                                 v-for="column in tableColumns"
                                 :key="column.column_name"
@@ -315,34 +294,6 @@ export default {
                     title = undefined;
                 });
         },
-
-        // getKey (rows) {
-        //     if(rows) {
-        //         // console.log(rows);
-
-        //         Object.keys(rows).forEach(row => {
-        //             // console.log(rows.ID);
-        //             return rows.ID;
-        //         });
-        //     }
-        // },
-
-        // getClass ({row, rowIndex}) {
-        //     if(this.isRowSelected(rowIndex)) {
-        //         return "current-row";
-        //     }
-        //     else {
-        //         return "";
-        //     }
-        // },
-
-        // getRow (tableData) {
-        //     tableData.forEach(row => {
-        //         return row;
-        //     })
-        //     // console.log(JSON.stringify(tableData));
-        //     // return JSON.stringify(tableData);
-        // },
 
         resetData() {
             this.paginateNumber = 50;

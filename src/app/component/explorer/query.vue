@@ -25,7 +25,7 @@
                 <thead>
                     <tr>
                         <th v-for="column in queryColumns" :key="column">
-                            <div class="cell">{{ column }}</div>
+                            <div class="cell" v-text="column"></div>
                         </th>
                     </tr>
                 </thead>
@@ -59,35 +59,68 @@ export default {
         queryData: [],
     }),
 
+    updated () {
+        this.resizeTable();
+    },
+
     methods: {
-        executeQuery() {
-            this.knex
-                .raw(this.query)
-                .then(result => {
-                    // MySQL resturns and array and the first key has the result
-                    result = result[0];
+         resizeTable () {
+            let title, startOffset;
 
-                    // For SELECT
-                    if (result.length) {
-                        this.queryColumns = Object.keys(result[0])
-                        this.queryData = result
-                        console.log(this.queryColumns);
-                        console.log(this.queryData);
+            Array.prototype.forEach.call(
+                document.querySelectorAll("table th"),
+                    function (th) {
+                        th.style.position = 'relative';
 
-                        this.successMessage(`Query executed! ${result.length} row(s) affected`);
+                        var grip = document.createElement('div');
+                        grip.innerHTML = "&nbsp;";
+                        grip.style.top = 0;
+                        grip.style.right = 0;
+                        grip.style.bottom = 0;
+                        grip.style.width = '5px';
+                        grip.style.position = 'absolute';
+                        grip.style.cursor = 'col-resize';
+                        grip.addEventListener('mousedown', function (e) {
+                            title = th;
+                            startOffset = th.offsetWidth - e.pageX;
+                        });
 
-                    // For INSERT/UPDATE/DELETE
-                    } else {
-                        this.queryColumns = []
-                        this.queryData = []
-                        this.successMessage(`Query executed! ${result.affectedRows} row(s) affected`);
+                        th.appendChild(grip);
+                });
 
+                document.addEventListener('mousemove', function (e) {
+                    if (title) {
+                        title.style.width = startOffset + e.pageX + 'px';
                     }
-                })
-                .catch(error => {
-                    this.errorMessage('Something went wrong.')
-                    console.error(error)
-                })
+                });
+
+                document.addEventListener('mouseup', function () {
+                    title = undefined;
+                });
+        },
+
+        executeQuery() {
+            this.knex.raw(this.query).then(result => {
+                // MySQL resturns and array and the first key has the result
+                result = result[0];
+
+                // For SELECT
+                if (result.length) {
+                    this.queryColumns = Object.keys(result[0])
+                    this.queryData = result
+                    this.successMessage(`Query executed! ${result.length} row(s) affected`);
+
+                // For INSERT/UPDATE/DELETE
+                } else {
+                    this.queryColumns = []
+                    this.queryData = []
+                    this.successMessage(`Query executed! ${result.affectedRows} row(s) affected`);
+                }
+            })
+            .catch(error => {
+                this.errorMessage('Something went wrong.')
+                console.error(error)
+            })
         },
     },
 }
