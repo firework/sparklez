@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import lodash from 'lodash'
+import VueLodash from 'vue-lodash'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import ElementTheme from 'element-theme-default'
@@ -10,6 +12,7 @@ import filters from './filter'
 
 Vue.use(ElementUI, { locale })
 Vue.use(ElementTheme)
+Vue.use(VueLodash, lodash)
 Vue.use(filters)
 
 Vue.directive('highlightjs', {

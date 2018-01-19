@@ -15,12 +15,6 @@
                                 <span v-text="favorite.database"></span>
                                 <i class="fa fa-fw fa-times" @click.stop="removeFavorite(key)"></i>
                             </el-menu-item>
-
-                            <!-- @TODO: folder feature -->
-                            <!-- <el-submenu index="2">
-                                <template slot="title"><i class="fa fa-fw fa-folder"></i> Development</template>
-                                <el-menu-item index="2-1"><i class="fa fa-fw fa-database"></i> localhost</el-menu-item>
-                            </el-submenu> -->
                         </el-menu>
                     </div>
                 </el-col>
@@ -101,7 +95,6 @@
         <el-row v-else> <!-- SIDE BAR - INDEX -->
             <el-col :span="4">
                 <el-menu class="has-full-height" @select="changeTableActive">
-
                     <div class="add-delete-buttons">
                         <el-button
                             plain
@@ -144,101 +137,108 @@
                         </el-button>
                     </div>
 
-
+                    <!-- DIALOG DELETE -->
                     <el-dialog
-                        :visible.sync="showDialogCreate"
-                        :title="dialogTitle"
+                        :visible.sync="dialog.showDialogDelete"
+                        :title="dialog.title"
                         :close-on-click-modal="false"
                         @click="closeModal()"
                     >
-                        <div class="form_holder">
-                            <div v-if="showAddInput">
-                                <el-form :model="newName" :rules="ruleName">
-                                    <el-form-item key="add" label="Name" prop="name">
-                                        <el-input type="text" v-model="newName.name"></el-input>
-                                    </el-form-item>
-                                </el-form>
-
-                                <div v-if="(dataType == 'table' ? true : false)">
-                                    <table class="db_column_table" cellspacing="0">
-                                        <tr>
-                                            <th colspan="3">
-                                                <span class="required">*</span>
-                                                Columns info
-                                            </th>
-                                        </tr>
-                                        <tr v-for="(row, index) in inputColumn" :key="index">
-                                            <el-form :model="row" :rules="ruleRow">
-                                                <el-form-item>
-                                                    <tr class="db_column_table_item">
-                                                        <td>
-                                                            <el-form-item prop="name">
-                                                                <el-input placeholder="Name" v-model="row.name"></el-input>
-                                                            </el-form-item>
-                                                        </td>
-                                                        <td>
-                                                            <el-form-item prop="type">
-                                                                <el-input placeholder="Type" v-model="row.type"></el-input>
-                                                            </el-form-item>
-                                                        </td>
-
-                                                        <td>
-                                                            <el-button type="danger" plain @click="removeRow(index)">
-                                                                <i class="fa fa-times"></i>
-                                                            </el-button>
-                                                        </td>
-                                                    </tr>
-                                                </el-form-item>
-                                            </el-form>
-                                        </tr>
-                                    </table>
-                                    <el-button plain @click="addColumn()">New column</el-button>
-                                </div>
-                            </div>
-
-                            <div v-else>
-                                <el-form
-                                    v-if="(dataType == 'table' ? true : false)"
-                                    :model="tableSelected"
-                                    :rules="ruleTable"
+                        <el-form
+                            v-if="dataTypeTable"
+                            :model="tableSelected"
+                            :rules="ruleTable"
+                        >
+                            <el-form-item key="delete" label="Name" prop="select">
+                                <el-select
+                                    v-model="tableSelected.select"
+                                    filterable
                                 >
-                                    <el-form-item key="delete" label="Name" prop="select">
-                                        <el-select
-                                            v-model="tableSelected.select"
-                                            filterable
-                                        >
-                                            <el-option key="placeholder" :value="resetSelected"></el-option>
-                                            <el-option
-                                                v-for="table in tables"
-                                                :key="table"
-                                                :label="table"
-                                                :value="table"
-                                            ></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-form>
+                                    <el-option key="placeholder" :value="dialog.resetSelected"></el-option>
+                                    <el-option
+                                        v-for="table in tables"
+                                        :key="table"
+                                        :label="table"
+                                        :value="table"
+                                    ></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-form>
 
-                                <el-form
-                                    v-else
-                                    :model="databaseSelected"
-                                    :rules="ruleTable"
+                        <el-form
+                            v-else
+                            :model="databaseSelected"
+                            :rules="ruleTable"
+                        >
+                            <el-form-item label="Name" prop="select">
+                                <el-select
+                                    v-model="databaseSelected.select"
+                                    filterable
                                 >
-                                    <el-form-item label="Name" prop="select">
-                                        <el-select
-                                            v-model="databaseSelected.select"
-                                            filterable
-                                        >
-                                            <el-option key="placeholder" :value="resetSelected"></el-option>
-                                            <el-option
-                                                v-for="database in databases"
-                                                :key="database"
-                                                :label="database"
-                                                :value="database"
-                                            ></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-form>
-                            </div>
+                                    <el-option key="placeholder" :value="dialog.resetSelected"></el-option>
+                                    <el-option
+                                        v-for="database in databases"
+                                        :key="database"
+                                        :label="database"
+                                        :value="database"
+                                    ></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-form>
+
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="closeModal()">Cancel</el-button>
+                            <el-button type="primary" @click="executeQuery()">Confirm</el-button>
+                        </div>
+                    </el-dialog>
+
+                    <!-- DIALOG ADD -->
+                    <el-dialog
+                        :visible.sync="dialog.showDialogAdd"
+                        :title="dialog.title"
+                        :close-on-click-modal="false"
+                        @click="closeModal()"
+                    >
+                        <el-form :model="newName" :rules="ruleName">
+                            <el-form-item key="add" label="Name" prop="name">
+                                <el-input type="text" v-model="newName.name"></el-input>
+                            </el-form-item>
+                        </el-form>
+
+                        <div v-if="dataTypeTable">
+                            <table class="db_column_table" cellspacing="0">
+                                <tr>
+                                    <th colspan="3">
+                                        <span class="required">*</span>
+                                        Columns info
+                                    </th>
+                                </tr>
+                                <tr v-for="(row, index) in inputColumn" :key="index">
+                                    <el-form :model="row" :rules="ruleRow">
+                                        <el-form-item>
+                                            <tr class="db_column_table_item">
+                                                <td>
+                                                    <el-form-item prop="name">
+                                                        <el-input placeholder="Name" v-model="row.name"></el-input>
+                                                    </el-form-item>
+                                                </td>
+                                                <td>
+                                                    <el-form-item prop="type">
+                                                        <el-input placeholder="Type" v-model="row.type"></el-input>
+                                                    </el-form-item>
+                                                </td>
+
+                                                <td>
+                                                    <el-button type="danger" plain @click="removeRow(index)">
+                                                        <i class="fa fa-times"></i>
+                                                    </el-button>
+                                                </td>
+                                            </tr>
+                                        </el-form-item>
+                                    </el-form>
+                                </tr>
+                            </table>
+                            <el-button plain @click="addColumn()">New column</el-button>
                         </div>
 
                         <div slot="footer" class="dialog-footer">
@@ -284,17 +284,12 @@
 </template>
 
 <script>
-import Knex from 'knex'
-import {
-    isNull as _isNull,
-    isNumber as _isNumber,
-    omit as _omit,
-    get as _get,
-} from 'lodash'
-import componentAsync from '~/js/componentAsync'
-import AppExplorer from '~/app/component/explorer/index'
-import ConnectionMixin from '~/js/mixin/connection'
-import AlertMessageMixin from '~/js/mixin/alertMessage'
+import Knex from 'knex';
+import Rules from '~/js/rules/rules';
+import componentAsync from '~/js/componentAsync';
+import AppExplorer from '~/app/component/explorer/index';
+import ConnectionMixin from '~/js/mixin/connection';
+import AlertMessageMixin from '~/js/mixin/alertMessage';
 
 export default {
     name: 'App',
@@ -306,45 +301,17 @@ export default {
     },
 
     data: () => ({
+        ...Rules,
         favorites: [],
         databases: [],
         tables: [],
         tableFilter: '',
-        rules: {
-            password: [
-                { required: true, message: 'Please input password', trigger: 'blur'}
-            ],
-        },
-        ruleName: {
-            name: [
-                { required: true, message: 'Please input the name', trigger: 'blur'}
-            ],
-        },
-        ruleRow: {
-            name: [
-                { required: true, message: 'Please input the column name', trigger: 'blur'}
-            ],
-            type: [
-                { required: true, message: 'Please input the column type', trigger: 'blur'}
-            ],
-        },
-        ruleTable: {
-            select: [
-                { required: true, message: 'Please select', trigger: 'change'}
-            ],
-        },
-        newName: {
-            name: '',
-        },
+        newName: { name: '' },
+        tableSelected: { select: '' },
+        databaseSelected: { select: '' },
         inputColumn: [
             {id: '', name: '', type: ''},
         ],
-        tableSelected: {
-            select: '',
-        },
-        databaseSelected: {
-            select: '',
-        },
         defaultConnection: {
             name: 'localhost',
             host: '127.0.0.1',
@@ -353,12 +320,15 @@ export default {
             active: false,
             tested: false,
         },
-        showDialogCreate: false,
-        dialogTitle: '',
-        showAddInput: '',
-        dataType: '',
-        resetSelected: 'Select',
-        index: 0,
+        dialog: {
+            showDialogAdd: false,
+            showDialogDelete: false,
+            title: '',
+            add: '',
+            dataType: '',
+            resetSelected: 'Select',
+            index: 0,
+        }
     }),
 
     computed: {
@@ -366,7 +336,6 @@ export default {
             return this.tables.filter(
                 table => !this.tableFilter || table.indexOf(this.tableFilter) !== -1
             )
-            this.loadDatabases();
         },
 
         computedDatabaseActive: {
@@ -379,30 +348,30 @@ export default {
                 this.loadTables(newValue);
             },
         },
+
+        dataTypeTable () {
+            if (this.dialog.dataType === 'table') {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
     },
 
     watch: {
-        // TODO: reactivity problem
-        // connection: {
-        //     handler(connection) {
-        //         this.knex = null
-        //         connection.tested = false
-        //
-        //         return connection
-        //     },
-        //     deep: true,
-        // },
-
-        favorites(favorites) {
+        favorites (favorites) {
             localStorage.setItem('favorites', JSON.stringify(favorites));
-
-            return favorites;
         },
     },
 
     methods: {
         addColumn () {
-            this.inputColumn.push({id:(this.index++), name:'', type: ''});
+            this.inputColumn.push({
+                id:(this.dialog.index++),
+                name:'',
+                type: ''
+            });
         },
 
         removeRow (row) {
@@ -410,78 +379,113 @@ export default {
         },
 
         toggleModal (title, add, type) {
-            this.showDialogCreate = !this.showDialogCreate;
-            this.dialogTitle = title;
-            this.showAddInput = add;
-            this.dataType = type;
+            this.dialog.title = title;
+            this.dialog.dataType = type;
+            this.dialog.add = add;
+
+            add ? this.dialog.showDialogAdd = true : this.dialog.showDialogDelete = true;
         },
 
         closeModal () {
-            this.showDialogCreate = false;
+            this.dialog.showDialogAdd = false;
+            this.dialog.showDialogDelete = false;
             this.newName.name = null;
         },
 
-        capitalize (word) {
-            return word.charAt(0).toUpperCase() + word.slice(1);
-        },
+        getElementsColumns () {
+            return _
+                .chain(this.inputColumn)
+                .transform((acc, input, index) => {
+                    let name = _.capitalize(input.name.toLowerCase());
+                    let type = input.type.toUpperCase();
 
-        getElementsColumns (inputColumn) {
-            let columnName=[], columnType=[], elements=[];
-
-            this.inputColumn.forEach(input => {
-                columnName.push( this.capitalize( (input.name).toLowerCase() ) );
-                columnType.push( (input.type).toUpperCase() );
-            })
-
-            for (let i = 0; i < columnName.length; i++) {
-                if (i != columnName.length -1) {
-                    elements += columnName[i] + " " + columnType[i] + ", ";
-                } else {
-                    elements += columnName[i] + " " + columnType[i];
-                }
-            }
-            return elements;
+                    acc[index] = `${name} ${type}`;
+                })
+                .join(',')
+                .value();
         },
 
         executeQuery() {
-            let action, type, query;
+            let action, type, query, name;
 
-            action = this.showAddInput ? 'CREATE ' : 'DROP ';
-            type = (this.dataType == 'database') ? 'DATABASE ' : 'TABLE ';
+            action = this.dialog.add ? 'CREATE ' : 'DROP ';
+            type = this.dataTypeTable ? 'TABLE ' : 'DATABASE ';
 
-            // PARA ADICIONAR DATABASE E TABLE
+            this.newName.name
+                ? name = this.newName.name
+                : name = this.tableSelected.select || this.databaseSelected.select;
+
+            query = action + type + name;
+
             if (this.newName.name) {
-
-                if (this.dataType == "table") {
-                    query = action + type + this.newName.name + " ( " + this.getElementsColumns(this.inputColumn) + " );";
+                if (this.dataTypeTable) {
+                    query += ' ( ' + this.getElementsColumns() + ' )';
                     this.sendQuery(query, ' table created!', 'Table already exists');
                 }
                 else {
-                    query = action + type + this.newName.name + ";";
                     this.sendQuery(query, ' database created!', 'Database already exists');
                 }
             }
-
-            // PARA DELETAR DATABASE E TABLE
             else if (this.tableSelected.select || this.databaseSelected.select) {
+                if (this.dataTypeTable) {
 
-                if (this.dataType == "table") {
-                    query = action + type + this.tableSelected.select + ";";
-                    this.sendQuery(query, ' table deleted!', 'Something went wrong.');
+                    if (this.checkForeignKey()) {
+                        this.updateForeignKey(this.tableSelected.select);
+                    }
+                    else {
+                        this.sendQuery(query, ' table deleted!', 'Something went wrong.');
+                    }
                 }
                 else {
-                    query = action + type + this.databaseSelected.select + ";";
                     this.sendQuery(query, ' database deleted!', 'Something went wrong.');
                 }
             }
         },
 
-        sendQuery (query, success, failure) {
-            let rows;
+        checkForeignKey () {
+            let query = "SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = '" + this.databaseActive + "'";
+
             this.knex.raw(query).then(result => {
-                console.log()
                 result = result[0];
-                rows = (this.newName.name && this.dataType == 'database') ? `${result.affectedRows}` : `${result.affectedRows+1}`;
+                result.forEach(line => {
+
+                    if (line.CONSTRAINT_NAME !== 'PRIMARY') {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                })
+            })
+        },
+
+        updateForeignKey (table) {
+            let fk0 = "SET foreign_key_checks = 0";
+            let drop = "DROP TABLE " + table;
+            let fk1 = "SET foreign_key_checks = 1";
+
+            this.knex.raw(fk0).then(result => {
+                result = result[0];
+            });
+
+            this.knex.raw(drop).then(result => {
+                result = result[0];
+                this.successMessage(`${result.affectedRows} table with foreign key deleted!`);
+            })
+            .catch(error => {
+                this.errorMessage('Something went wrong.');
+                console.error(error);
+            });
+
+            this.knex.raw(fk1).then(result => {
+                result = result[0];
+            });
+        },
+
+        sendQuery (query, success, failure) {
+            this.knex.raw(query).then(result => {
+                result = result[0];
+                let rows = (this.newName.name && this.dialog.dataType == 'database') ? `${result.affectedRows}` : `${result.affectedRows+1}`;
                 this.successMessage(rows + success);
 
                 this.loadDatabases();
@@ -494,10 +498,11 @@ export default {
 
         saveAsFavorite() {
             this.favorites.push(
-                _omit(this.connection, 'dateStrings', 'active', 'tested')
+                _.omit(this.connection, 'dateStrings', 'active', 'tested')
             )
             this.successMessage('Connection added on favorites.');
         },
+
 
         // @TODO: check connection.favorite === true to disable favorite button
         setFavorite(favorite) {
@@ -513,7 +518,7 @@ export default {
         getKnex() {
             let knex = Knex({
                 client: 'mysql',
-                connection: _omit(this.connection, 'active'),
+                connection: _.omit(this.connection, 'active'),
             });
 
             this.setKnex(knex);
@@ -539,16 +544,14 @@ export default {
             // Force Propagation
             this.getKnex();
 
-            return this.loadDatabases()
-                            .then(() => {
-                                this.connection.tested = true
-                                this.successMessage('Connection accepted.')
-                            })
+            return this.loadDatabases().then(() => {
+                        this.connection.tested = true
+                        this.successMessage('Connection accepted.')
+                    })
         },
 
         connect() {
-            this.testConnection()
-                .then(() => {
+            this.testConnection().then(() => {
                     this.updatePropertyConnection({
                         property: 'active',
                         value: true
@@ -565,7 +568,7 @@ export default {
                             sql: data.sql.replace(/\?/g, () => {
                                 let value = data.bindings[index++]
 
-                                return _isNumber(value) || _isNull(value) ?
+                                return _.isNumber(value) || _.isNull(value) ?
                                     value :
                                     `'${value}'`
                             }),

@@ -1,5 +1,5 @@
 <template>
-    <div class="explorer has-full-height">  <!-- QUADRO A DIREITA -->
+    <div class="explorer has-full-height">  <!-- right sidebar -->
         <div class="explorer__header">
             <el-button-group>
                 <el-button
@@ -35,6 +35,15 @@
 
             <el-button type="warning" @click="disconnect()">
                 <i class="fa fa-fw fa-power-off"></i> Disconnect
+            </el-button>
+
+            <el-button type="info" @click="">
+                <span class="dump">
+                    <i class="fa fa-database"></i>
+                    <i class="fa fa-long-arrow-up"></i>
+                    <i class="fa fa-long-arrow-down"></i>
+                </span>
+                Dump
             </el-button>
         </div>
 
@@ -95,15 +104,13 @@
                             @current-change="setPaginatePage($event)"
                         ></el-pagination>
                         <br>
-                        <div class="el-table">
+                        <div class="el-table table-bordered">
                             <div class="el-table__body">
                                 <table class="el-table__body" cellspacing="0" cellpadding="0">
                                     <thead>
                                         <tr class="el-table__row">
                                             <th v-for="(column, key) in tableColumns" :key="key">
-                                                <div class="cell" v-text="column.column_name">
-                                                    {{ resizeTable() }}
-                                                </div>
+                                                <div class="cell" v-text="column.column_name"></div>
                                             </th>
                                         </tr>
                                     </thead>
@@ -185,13 +192,7 @@
     </div>
 </template>
 
-
 <script>
-import {
-    mapKeys as _mapKeys,
-    without as _without,
-    clone as _clone,
-} from 'lodash'
 import Vue from 'vue'
 import componentAsync from '~/js/componentAsync'
 import AppStructure from './structure'
@@ -259,40 +260,38 @@ export default {
         },
     },
 
+    updated () {
+        this.resizeTable();
+    },
+
     methods: {
         resizeTable () {
-            let title, startOffset;
+            let thead, startOffset;
 
-            Array.prototype.forEach.call(
-                document.querySelectorAll("table th"),
-                    function (th) {
-                        th.style.position = 'relative';
+            document.querySelectorAll("table th").forEach(th => {
+                th.style.position = 'relative';
 
-                        var grip = document.createElement('div');
-                        grip.innerHTML = "&nbsp;";
-                        grip.style.top = 0;
-                        grip.style.right = 0;
-                        grip.style.bottom = 0;
-                        grip.style.width = '5px';
-                        grip.style.position = 'absolute';
-                        grip.style.cursor = 'col-resize';
-                        grip.addEventListener('mousedown', function (e) {
-                            title = th;
-                            startOffset = th.offsetWidth - e.pageX;
-                        });
+                var grip = document.createElement('div');
+                grip.classList.add('resizeTable');
+                grip.innerHTML = "&nbsp;";
 
-                        th.appendChild(grip);
+                grip.addEventListener('mousedown', function (e) {
+                    thead = th;
+                    startOffset = th.offsetWidth - e.pageX;
                 });
+
+                th.appendChild(grip);
 
                 document.addEventListener('mousemove', function (e) {
-                    if (title) {
-                        title.style.width = startOffset + e.pageX + 'px';
+                    if (thead) {
+                        thead.style.width = startOffset + e.pageX + 'px';
                     }
                 });
+            });
 
-                document.addEventListener('mouseup', function () {
-                    title = undefined;
-                });
+            document.addEventListener('mouseup', function () {
+                thead = undefined;
+            });
         },
 
         resetData() {
@@ -351,7 +350,7 @@ export default {
 
         toggleRow(rowKey) {
             if (this.isRowSelected(rowKey)) {
-                this.rowsSelected = _without(this.rowsSelected, rowKey);
+                this.rowsSelected = _.without(this.rowsSelected, rowKey);
             } else {
                 this.rowsSelected.push(rowKey);
             }
@@ -376,7 +375,7 @@ export default {
                 .then(result => {
                     this.setTableColumns(
                         result.map(row =>
-                            _mapKeys(row, (value, key) => key.toLowerCase())
+                            _.mapKeys(row, (value, key) => key.toLowerCase())
                         )
                     )
                 })
@@ -434,7 +433,7 @@ export default {
 
         setRowActive(row) {
             this.rowActive = row;
-            this.rowForm = _clone(row);
+            this.rowForm = _.clone(row);
             this.showDialogEdit = !! row;
         },
 
@@ -540,11 +539,12 @@ export default {
     }
 
     &__content {
-
-        table th, table td {
-            &:not(:last-child) {
-                border-right: 1px solid #dfe6ec;
-                border-bottom: 1px solid #dfe6ec;
+        .table-bordered{
+            th, td {
+                &:not(:last-child) {
+                    border-right: 1px solid #dfe6ec;
+                    border-bottom: 1px solid #dfe6ec;
+                }
             }
         }
 
@@ -581,5 +581,36 @@ export default {
 
 .paginate {
     width: auto !important;
+}
+.dump {
+    position: relative;
+
+    .fa-long-arrow-up,
+    .fa-long-arrow-down {
+        position: absolute;
+        font-size: 11px;
+        top: 10px;
+    }
+
+    .fa-database {
+        padding-right: 10px;
+    }
+
+    .fa-long-arrow-up {
+        right: 3px;
+        top: 9px;
+    }
+
+    .fa-long-arrow-down {
+        right: 8px;
+    }
+}
+.resizeTable {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
 }
 </style>

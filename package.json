@@ -50,6 +50,7 @@
     "moment": "^2.18.1",
     "mysql": "^2.13.0",
     "vue": "^2.3.4",
+    "vue-lodash": "^1.0.4",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

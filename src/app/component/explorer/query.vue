@@ -65,38 +65,32 @@ export default {
 
     methods: {
          resizeTable () {
-            let title, startOffset;
+            let thead, startOffset;
 
-            Array.prototype.forEach.call(
-                document.querySelectorAll("table th"),
-                    function (th) {
-                        th.style.position = 'relative';
+            document.querySelectorAll("table th").forEach(th => {
+                th.style.position = 'relative';
 
-                        var grip = document.createElement('div');
-                        grip.innerHTML = "&nbsp;";
-                        grip.style.top = 0;
-                        grip.style.right = 0;
-                        grip.style.bottom = 0;
-                        grip.style.width = '5px';
-                        grip.style.position = 'absolute';
-                        grip.style.cursor = 'col-resize';
-                        grip.addEventListener('mousedown', function (e) {
-                            title = th;
-                            startOffset = th.offsetWidth - e.pageX;
-                        });
+                var grip = document.createElement('div');
+                grip.classList.add('resizeTable');
+                grip.innerHTML = "&nbsp;";
 
-                        th.appendChild(grip);
+                grip.addEventListener('mousedown', function (e) {
+                    thead = th;
+                    startOffset = th.offsetWidth - e.pageX;
                 });
+
+                th.appendChild(grip);
 
                 document.addEventListener('mousemove', function (e) {
-                    if (title) {
-                        title.style.width = startOffset + e.pageX + 'px';
+                    if (thead) {
+                        thead.style.width = startOffset + e.pageX + 'px';
                     }
                 });
+            });
 
-                document.addEventListener('mouseup', function () {
-                    title = undefined;
-                });
+            document.addEventListener('mouseup', function () {
+                thead = undefined;
+            });
         },
 
         executeQuery() {
@@ -125,3 +119,14 @@ export default {
     },
 }
 </script>
+
+<style lang="scss">
+.resizeTable {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+}
+</style>
