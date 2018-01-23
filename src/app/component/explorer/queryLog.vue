@@ -1,6 +1,6 @@
 <template>
     <div id="query-log" class="el-table table-bordered">
-        <table class="el-table__body" cellspacing="0" cellpadding="0">
+        <table class="el-table__body" v-resize cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
                     <th>

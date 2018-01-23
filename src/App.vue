@@ -398,9 +398,7 @@ export default {
                 .chain(this.inputColumn)
                 .transform((acc, input, index) => {
                     let name = _.capitalize(input.name.toLowerCase());
-                    console.log(name);
                     let type = input.type.toUpperCase();
-                    console.log(type);
 
                     acc[index] = `${name} ${type}`;
                 })

@@ -56,11 +56,12 @@
                 <el-form>
                     <el-form-item label="Import">
                         <br />
-                        <input id="sql" type="file" accept=".sql">
+                        <input ref="sql" type="file" accept=".sql">
                     </el-form-item>
                     <hr>
                     <el-form-item label="Export">
                         <el-select
+                            class="db_exported"
                             v-model="selectedDatabase"
                             filterable
                             placeholder="Select database"
@@ -72,12 +73,18 @@
                                 :value="database"
                             ></el-option>
                         </el-select>
+
+                        <el-form-item>
+                            <small class="export_message">You file will be exported to your home directory (/home/{yourname}/)</small>
+                            <small class="export_message">If you want to export to another folder, insert the path below</small>
+                            <el-input placeholder="Downloads/" v-model="pathExportedFile"></el-input>
+                        </el-form-item>
                     </el-form-item>
 
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="closeModal()">Cancel</el-button>
-                    <el-button type="primary" @click="executeQuery()">Confirm</el-button>
+                    <el-button type="primary" @click="dumpSQL()">Confirm</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -141,7 +148,7 @@
                         <br>
                         <div class="el-table table-bordered">
                             <div class="el-table__body">
-                                <table class="el-table__body" cellspacing="0" cellpadding="0">
+                                <table class="el-table__body" v-resize cellspacing="0" cellpadding="0">
                                     <thead>
                                         <tr class="el-table__row">
                                             <th v-for="(column, key) in tableColumns" :key="key">
@@ -235,12 +242,15 @@ import AppQuery from './query';
 import AppQueryLog from './queryLog';
 import ConnectionMixin from '~/js/mixin/connection';
 import AlertMessageMixin from '~/js/mixin/alertMessage';
-import resizeTable from '~/js/mixin/resizeTable';
+import os from 'os';
+import fs from 'fs';
+import mysql from 'mysql';
+import mysqlDump from 'mysqldump';
 
 export default {
     name: 'Content',
 
-    mixins: [ConnectionMixin, AlertMessageMixin, resizeTable],
+    mixins: [ConnectionMixin, AlertMessageMixin],
 
     components: {
         'app-structure': componentAsync.asyncComp(AppStructure),
@@ -278,6 +288,7 @@ export default {
         openModal: false,
         selectedDatabase: '',
         databases: [],
+        pathExportedFile: '',
     }),
 
     watch: {
@@ -299,8 +310,7 @@ export default {
         },
     },
 
-    updated () {
-        this.resizeTable();
+    mounted () {
         this.getDatabases();
     },
 
@@ -319,51 +329,41 @@ export default {
             })
         },
 
-        executeQuery () {
-            let mysql = require('mysql');
-            var mysqlDump = require('mysqldump');
-            let fs = require('fs');
-            let os = require('os');
-            let file = document.getElementById('sql').files[0];
-
-            let connection = mysql.createConnection({
-                host     : 'localhost',
-                user     : 'root',
-                password : '',
-                database : this.databaseActive,
-                multipleStatements: true,
-            });
+        dumpSQL () {
+            let file = this.$refs.sql.files[0];
 
             if (this.selectedDatabase) {
                 let homeDir = os.homedir();
 
                 mysqlDump({
-                    host: 'localhost',
-                    user: 'root',
-                    password: '',
+                    host: this.connection.name,
+                    user: this.connection.user,
+                    password: this.connection.password,
                     database: this.selectedDatabase,
-                    dest: `${homeDir}/Downloads/${this.selectedDatabase.toLowerCase()}.sql`
+                    dest: `${homeDir}/${this.pathExportedFile}${this.selectedDatabase.toLowerCase()}.sql`
                 },(err) => {
-                    if(err) {
-                        console.log('Error:', err);
-                        this.errorMessage('Something went wrong.')
-                    }
-
-                    this.successMessage('SQL file exported to Downloads folder!');
+                    err ? this.errorMessage('Something went wrong.') : this.successMessage('SQL file exported!');
                 });
             }
-            else if (file){
+            else if (file) {
+                let connection = mysql.createConnection({
+                    host: this.connection.name,
+                    user: this.connection.user,
+                    password: this.connection.password,
+                    database : this.databaseActive,
+                    multipleStatements: true,
+                });
+                connection.connect();
+
                 let sql = fs.readFileSync(file.path).toString();
                 let final = connection.query(sql, (error, results) => {
-                    if (error) {
-                        this.errorMessage('Something went wrong.')
-                        throw error;
-                    }
-                    else {
-                        this.successMessage('SQL file imported!')
-                    }
+                    error
+                        ? this.errorMessage('Something went wrong.')
+                        : this.successMessage('SQL file imported!');
                 });
-                document.getElementById("sql").value = "";
+
+                connection.end();
+                this.$refs.sql.value = "";
             }
         },
 
@@ -679,11 +679,19 @@ export default {
     }
 }
 .resizeTable {
+    content: ' ';
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     width: 5px;
     cursor: col-resize;
+}
+.export_message {
+    display: block;
+    line-height: 22px;
+}
+.db_exported {
+    margin-bottom: 14px;
 }
 </style>

@@ -21,7 +21,7 @@
         </el-form>
 
         <div class="el-table table-bordered">
-            <table class="el-table__body" cellspacing="0" cellpadding="0">
+            <table class="el-table__body" v-resize cellspacing="0" cellpadding="0">
                 <thead>
                     <tr>
                         <th v-for="column in queryColumns" :key="column">
@@ -47,22 +47,17 @@
 <script>
 import ConnectionMixin from '~/js/mixin/connection';
 import AlertMessageMixin from '~/js/mixin/alertMessage';
-import resizeTable from '~/js/mixin/resizeTable';
 
 export default {
     name: 'Query',
 
-    mixins: [ConnectionMixin, AlertMessageMixin, resizeTable],
+    mixins: [ConnectionMixin, AlertMessageMixin],
 
     data: () => ({
         query: null,
         queryColumns: [],
         queryData: [],
     }),
-
-    updated () {
-        this.resizeTable();
-    },
 
     methods: {
         executeQuery() {

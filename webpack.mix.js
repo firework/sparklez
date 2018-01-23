@@ -8,6 +8,7 @@ const options = {
 const webpackConfig = {
     externals: {
         mysql: 'require("mysql")',
+        mysqlDump: 'require("mysqldump")',
         fs: 'require("fs")',
         os: 'require("os")',
     },

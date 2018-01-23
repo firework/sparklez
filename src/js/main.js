@@ -47,6 +47,40 @@ Vue.directive('highlightjs', {
     },
 })
 
+Vue.directive('resize', {
+    componentUpdated: function (el) {
+        let thead, startOffset;
+        let ths = el.tHead.rows[0].cells;
+
+        if (ths) {
+            Array.prototype.forEach.call(ths, th => {
+
+                th.style.position = 'relative';
+
+                let grip = document.createElement('div');
+                grip.classList.add('resizeTable');
+
+                grip.addEventListener('mousedown', function (e) {
+                    thead = th;
+                    startOffset = th.offsetWidth - e.pageX;
+
+                    document.addEventListener('mousemove', function (e) {
+                        if(thead) {
+                            thead.style.width = startOffset + e.pageX + 'px';
+                        }
+                    })
+                })
+
+            th.appendChild(grip);
+            })
+
+            document.addEventListener('mouseup', function () {
+                thead = undefined;
+            })
+        }
+    }
+})
+
 new Vue({
     el: '#app',
     store,
