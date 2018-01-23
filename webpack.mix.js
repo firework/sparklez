@@ -8,6 +8,8 @@ const options = {
 const webpackConfig = {
     externals: {
         mysql: 'require("mysql")',
+        fs: 'require("fs")',
+        os: 'require("os")',
     },
     plugins: [
         new HtmlWebpackPlugin({

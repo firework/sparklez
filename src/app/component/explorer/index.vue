@@ -33,11 +33,7 @@
                 <i class="fa fa-fw fa-refresh"></i> Refresh
             </el-button>
 
-            <el-button type="warning" @click="disconnect()">
-                <i class="fa fa-fw fa-power-off"></i> Disconnect
-            </el-button>
-
-            <el-button type="info" @click="">
+            <el-button type="info" @click="modalDump()">
                 <span class="dump">
                     <i class="fa fa-database"></i>
                     <i class="fa fa-long-arrow-up"></i>
@@ -45,6 +41,45 @@
                 </span>
                 Dump
             </el-button>
+
+            <el-button type="warning" @click="disconnect()">
+                <i class="fa fa-fw fa-power-off"></i> Disconnect
+            </el-button>
+
+
+            <el-dialog
+                 :visible.sync="openModal"
+                 :close-on-click-modal="false"
+                 title="Dump SQL"
+                 @click="closeModal()"
+            >
+                <el-form>
+                    <el-form-item label="Import">
+                        <br />
+                        <input id="sql" type="file" accept=".sql">
+                    </el-form-item>
+                    <hr>
+                    <el-form-item label="Export">
+                        <el-select
+                            v-model="selectedDatabase"
+                            filterable
+                            placeholder="Select database"
+                        >
+                            <el-option
+                                v-for="database in databases"
+                                :key="database"
+                                :label="database"
+                                :value="database"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="closeModal()">Cancel</el-button>
+                    <el-button type="primary" @click="executeQuery()">Confirm</el-button>
+                </div>
+            </el-dialog>
         </div>
 
         <el-tabs class="explorer__content">
@@ -193,18 +228,19 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import componentAsync from '~/js/componentAsync'
-import AppStructure from './structure'
-import AppQuery from './query'
-import AppQueryLog from './queryLog'
-import ConnectionMixin from '~/js/mixin/connection'
-import AlertMessageMixin from '~/js/mixin/alertMessage'
+import Vue from 'vue';
+import componentAsync from '~/js/componentAsync';
+import AppStructure from './structure';
+import AppQuery from './query';
+import AppQueryLog from './queryLog';
+import ConnectionMixin from '~/js/mixin/connection';
+import AlertMessageMixin from '~/js/mixin/alertMessage';
+import resizeTable from '~/js/mixin/resizeTable';
 
 export default {
     name: 'Content',
 
-    mixins: [ConnectionMixin, AlertMessageMixin],
+    mixins: [ConnectionMixin, AlertMessageMixin, resizeTable],
 
     components: {
         'app-structure': componentAsync.asyncComp(AppStructure),
@@ -239,6 +275,9 @@ export default {
         rowType: 'update',
         showDialogEdit: false,
         title: '',
+        openModal: false,
+        selectedDatabase: '',
+        databases: [],
     }),
 
     watch: {
@@ -262,36 +301,70 @@ export default {
 
     updated () {
         this.resizeTable();
+        this.getDatabases();
     },
 
     methods: {
-        resizeTable () {
-            let thead, startOffset;
+        modalDump () {
+            this.openModal = true;
+        },
 
-            document.querySelectorAll("table th").forEach(th => {
-                th.style.position = 'relative';
+        closeModal () {
+            this.openModal = false;
+        },
 
-                var grip = document.createElement('div');
-                grip.classList.add('resizeTable');
-                grip.innerHTML = "&nbsp;";
+        getDatabases () {
+            this.knex.raw('show databases').then(database => {
+                this.databases = database[0].map(db => db.Database);
+            })
+        },
 
-                grip.addEventListener('mousedown', function (e) {
-                    thead = th;
-                    startOffset = th.offsetWidth - e.pageX;
+        executeQuery () {
+            let mysql = require('mysql');
+            var mysqlDump = require('mysqldump');
+            let fs = require('fs');
+            let os = require('os');
+            let file = document.getElementById('sql').files[0];
+
+            let connection = mysql.createConnection({
+                host     : 'localhost',
+                user     : 'root',
+                password : '',
+                database : this.databaseActive,
+                multipleStatements: true,
+            });
+
+            if (this.selectedDatabase) {
+                let homeDir = os.homedir();
+
+                mysqlDump({
+                    host: 'localhost',
+                    user: 'root',
+                    password: '',
+                    database: this.selectedDatabase,
+                    dest: `${homeDir}/Downloads/${this.selectedDatabase.toLowerCase()}.sql`
+                },(err) => {
+                    if(err) {
+                        console.log('Error:', err);
+                        this.errorMessage('Something went wrong.')
+                    }
+
+                    this.successMessage('SQL file exported to Downloads folder!');
                 });
-
-                th.appendChild(grip);
-
-                document.addEventListener('mousemove', function (e) {
-                    if (thead) {
-                        thead.style.width = startOffset + e.pageX + 'px';
+            }
+            else if (file){
+                let sql = fs.readFileSync(file.path).toString();
+                let final = connection.query(sql, (error, results) => {
+                    if (error) {
+                        this.errorMessage('Something went wrong.')
+                        throw error;
+                    }
+                    else {
+                        this.successMessage('SQL file imported!')
                     }
                 });
-            });
-
-            document.addEventListener('mouseup', function () {
-                thead = undefined;
-            });
+                document.getElementById("sql").value = "";
+            }
         },
 
         resetData() {

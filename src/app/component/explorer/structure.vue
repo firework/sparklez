@@ -1,5 +1,5 @@
 <template>
-    <div id="structure" class="el-table">
+    <div id="structure" class="el-table table-bordered">
         <table class="el-table__body" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>

@@ -20,7 +20,7 @@
             </el-form-item>
         </el-form>
 
-        <div class="el-table">
+        <div class="el-table table-bordered">
             <table class="el-table__body" cellspacing="0" cellpadding="0">
                 <thead>
                     <tr>
@@ -45,13 +45,14 @@
 </template>
 
 <script>
-import ConnectionMixin from '~/js/mixin/connection'
-import AlertMessageMixin from '~/js/mixin/alertMessage'
+import ConnectionMixin from '~/js/mixin/connection';
+import AlertMessageMixin from '~/js/mixin/alertMessage';
+import resizeTable from '~/js/mixin/resizeTable';
 
 export default {
     name: 'Query',
 
-    mixins: [ConnectionMixin, AlertMessageMixin],
+    mixins: [ConnectionMixin, AlertMessageMixin, resizeTable],
 
     data: () => ({
         query: null,
@@ -64,35 +65,6 @@ export default {
     },
 
     methods: {
-         resizeTable () {
-            let thead, startOffset;
-
-            document.querySelectorAll("table th").forEach(th => {
-                th.style.position = 'relative';
-
-                var grip = document.createElement('div');
-                grip.classList.add('resizeTable');
-                grip.innerHTML = "&nbsp;";
-
-                grip.addEventListener('mousedown', function (e) {
-                    thead = th;
-                    startOffset = th.offsetWidth - e.pageX;
-                });
-
-                th.appendChild(grip);
-
-                document.addEventListener('mousemove', function (e) {
-                    if (thead) {
-                        thead.style.width = startOffset + e.pageX + 'px';
-                    }
-                });
-            });
-
-            document.addEventListener('mouseup', function () {
-                thead = undefined;
-            });
-        },
-
         executeQuery() {
             this.knex.raw(this.query).then(result => {
                 // MySQL resturns and array and the first key has the result
@@ -119,14 +91,3 @@ export default {
     },
 }
 </script>
-
-<style lang="scss">
-.resizeTable {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 5px;
-    cursor: col-resize;
-}
-</style>

@@ -319,6 +319,7 @@ export default {
             user: 'root',
             active: false,
             tested: false,
+            multipleStatements: true,
         },
         dialog: {
             showDialogAdd: false,
@@ -333,9 +334,9 @@ export default {
 
     computed: {
         tablesFiltered() {
-            return this.tables.filter(
-                table => !this.tableFilter || table.indexOf(this.tableFilter) !== -1
-            )
+            return this.tableFilter
+                ? this.tables.filter(table => table.includes(this.tableFilter))
+                : this.tables;
         },
 
         computedDatabaseActive: {
@@ -397,7 +398,9 @@ export default {
                 .chain(this.inputColumn)
                 .transform((acc, input, index) => {
                     let name = _.capitalize(input.name.toLowerCase());
+                    console.log(name);
                     let type = input.type.toUpperCase();
+                    console.log(type);
 
                     acc[index] = `${name} ${type}`;
                 })
@@ -430,7 +433,7 @@ export default {
                 if (this.dataTypeTable) {
 
                     if (this.checkForeignKey()) {
-                        this.updateForeignKey(this.tableSelected.select);
+                        this.dropTableWithForeignKey(this.tableSelected.select);
                     }
                     else {
                         this.sendQuery(query, ' table deleted!', 'Something went wrong.');
@@ -459,7 +462,7 @@ export default {
             })
         },
 
-        updateForeignKey (table) {
+        dropTableWithForeignKey (table) {
             let fk0 = "SET foreign_key_checks = 0";
             let drop = "DROP TABLE " + table;
             let fk1 = "SET foreign_key_checks = 1";
@@ -545,9 +548,9 @@ export default {
             this.getKnex();
 
             return this.loadDatabases().then(() => {
-                        this.connection.tested = true
-                        this.successMessage('Connection accepted.')
-                    })
+                this.connection.tested = true
+                this.successMessage('Connection accepted.')
+            })
         },
 
         connect() {

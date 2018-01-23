@@ -12,7 +12,6 @@ import filters from './filter'
 
 Vue.use(ElementUI, { locale })
 Vue.use(ElementTheme)
-Vue.use(VueLodash, lodash)
 Vue.use(filters)
 
 Vue.directive('highlightjs', {
