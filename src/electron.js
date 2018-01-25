@@ -24,7 +24,8 @@ function createWindow() {
         })
     )
 
-    // Open the DevTools.
+    // Uncomment this on Dev
+    // require('vue-devtools').install();
     // mainWindow.webContents.openDevTools()
 
     // Emitted when the window is closed.
@@ -58,10 +59,5 @@ app.on('activate', function() {
     }
 })
 
-app.on('ready', () => {
-    if (process.env.NODE_ENV !== 'production') {
-        require('vue-devtools').install();
-    }
-})
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

@@ -28,6 +28,6 @@ const webpackConfig = {
 mix
     .options(options)
     .webpackConfig(webpackConfig)
-    .copy('src/electron.js', 'dist')
+    .babel('src/electron.js', 'dist/electron.js')
     .copy('src/package.json', 'dist')
     .js('src/js/main.js', 'dist')
