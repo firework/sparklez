@@ -1,5 +1,9 @@
 import Vue from 'vue'
+import lodash from 'lodash'
+import VueLodash from 'vue-lodash'
 import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import ElementTheme from 'element-theme-default'
 import locale from 'element-ui/lib/locale/lang/en'
 import highlightjs from 'highlight.js'
 import App from '~/App.vue'
@@ -7,6 +11,7 @@ import store from './store'
 import filters from './filter'
 
 Vue.use(ElementUI, { locale })
+Vue.use(ElementTheme)
 Vue.use(filters)
 
 Vue.directive('highlightjs', {
@@ -40,6 +45,40 @@ Vue.directive('highlightjs', {
             }
         }
     },
+})
+
+Vue.directive('resize', {
+    componentUpdated: function (el) {
+        let thead, startOffset;
+        let ths = el.tHead.rows[0].cells;
+
+        if (ths) {
+            Array.prototype.forEach.call(ths, th => {
+
+                th.style.position = 'relative';
+
+                let grip = document.createElement('div');
+                grip.classList.add('resizeTable');
+
+                grip.addEventListener('mousedown', function (e) {
+                    thead = th;
+                    startOffset = th.offsetWidth - e.pageX;
+
+                    document.addEventListener('mousemove', function (e) {
+                        if(thead) {
+                            thead.style.width = startOffset + e.pageX + 'px';
+                        }
+                    })
+                })
+
+            th.appendChild(grip);
+            })
+
+            document.addEventListener('mouseup', function () {
+                thead = undefined;
+            })
+        }
+    }
 })
 
 new Vue({

@@ -12,7 +12,7 @@
 
             <el-form-item>
                 <el-button
-                    type="primary"
+                    :plain="true"
                     @click="executeQuery()"
                 >
                     Execute Query
@@ -20,12 +20,12 @@
             </el-form-item>
         </el-form>
 
-        <div class="el-table">
-            <table class="el-table__body" cellspacing="0" cellpadding="0">
+        <div class="el-table table-bordered">
+            <table class="el-table__body" v-resize cellspacing="0" cellpadding="0">
                 <thead>
                     <tr>
                         <th v-for="column in queryColumns" :key="column">
-                            <div class="cell">{{ column }}</div>
+                            <div class="cell" v-text="column"></div>
                         </th>
                     </tr>
                 </thead>
@@ -45,8 +45,8 @@
 </template>
 
 <script>
-import ConnectionMixin from '~/js/mixin/connection'
-import AlertMessageMixin from '~/js/mixin/alertMessage'
+import ConnectionMixin from '~/js/mixin/connection';
+import AlertMessageMixin from '~/js/mixin/alertMessage';
 
 export default {
     name: 'Query',
@@ -61,24 +61,27 @@ export default {
 
     methods: {
         executeQuery() {
-            this.knex
-                .raw(this.query)
-                .then(result => {
-                    // MySQL resturns and array and the first key has the result
-                    result = result[0]
+            this.knex.raw(this.query).then(result => {
+                // MySQL resturns and array and the first key has the result
+                result = result[0];
 
-                    if (result.length) {
-                        this.queryColumns = Object.keys(result[0])
-                        this.queryData = result
-                    } else {
-                        this.queryColumns = []
-                        this.queryData = []
-                    }
-                })
-                .catch(error => {
-                    this.errorMessage('Something went wrong.')
-                    console.error(error)
-                })
+                // For SELECT
+                if (result.length) {
+                    this.queryColumns = Object.keys(result[0])
+                    this.queryData = result
+                    this.successMessage(`Query executed! ${result.length} row(s) affected`);
+
+                // For INSERT/UPDATE/DELETE
+                } else {
+                    this.queryColumns = []
+                    this.queryData = []
+                    this.successMessage(`Query executed! ${result.affectedRows} row(s) affected`);
+                }
+            })
+            .catch(error => {
+                this.errorMessage('Something went wrong.')
+                console.error(error)
+            })
         },
     },
 }
