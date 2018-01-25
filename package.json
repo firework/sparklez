@@ -3,7 +3,8 @@
   "description": "Database Tool",
   "author": "Firework Web e Mobile <contact@fireworkweb.com>",
   "main": "dist/electron.js",
-  "version": "0.0.6",
+  "version": "0.0.7",
+  "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
