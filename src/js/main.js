@@ -54,7 +54,6 @@ Vue.directive('resize', {
 
         if (ths) {
             Array.prototype.forEach.call(ths, th => {
-
                 th.style.position = 'relative';
 
                 let grip = document.createElement('div');
@@ -71,7 +70,7 @@ Vue.directive('resize', {
                     })
                 })
 
-            th.appendChild(grip);
+                th.appendChild(grip);
             })
 
             document.addEventListener('mouseup', function () {

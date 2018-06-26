@@ -610,6 +610,8 @@ export default {
 }
 
 .explorer {
+    display: flex;
+    flex-direction: column;
     padding: 20px;
 
     &__header {
@@ -617,6 +619,17 @@ export default {
     }
 
     &__content {
+        flex-grow: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .el-tabs__content {
+            flex-grow: 1;
+            height: 100%;
+            overflow: auto;
+        }
+
         .table-bordered{
             th, td {
                 &:not(:last-child) {
@@ -629,7 +642,7 @@ export default {
         .el-table {
             min-width: 100%;
             max-width: none;
-            overflow: auto;
+            overflow: visible;
             width: auto;
         }
 
