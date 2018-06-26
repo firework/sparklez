@@ -10,6 +10,7 @@
                                 :key="key"
                                 :index="key + ''"
                                 @click="setFavorite(favorite)"
+                                @dblclick.native="connect()"
                             >
                                 <i class="fa fa-fw fa-database"></i>
                                 <span v-text="favorite.database"></span>

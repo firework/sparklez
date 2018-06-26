@@ -162,8 +162,8 @@
                                             :key="key"
                                             class="el-table__row"
                                             :class="{'current-row': isRowSelected(key)}"
-                                            @dblclick="openRow(row, 'Edit Row')"
                                             @click="toggleRow(key)"
+                                            @dblclick="openRow(row, 'Edit Row')"
                                         >
                                             <td v-for="(column, key) in tableColumns" :key="key">
                                                 <div
@@ -189,14 +189,19 @@
                         :title="title"
                         :close-on-click-modal="false"
                         @close="setRowActive(null)"
+                        width="90%"
                     >
                         <el-form v-if="hasRowActive" :model="rowForm">
                             <el-form-item
                                 v-for="column in tableColumns"
                                 :key="column.column_name"
-                                :label="column.column_name">
-
-                                <el-input v-model="rowForm[column.column_name]"></el-input>
+                                :label="column.column_name"
+                            >
+                                <el-input
+                                    :type="column.column_type === 'text' ? 'textarea' : 'text'"
+                                    :autosize=" { minRows: 2, maxRows: 10 }"
+                                    v-model="rowForm[column.column_name]"
+                                ></el-input>
                             </el-form-item>
                         </el-form>
                         <div slot="footer" class="dialog-footer">
@@ -642,6 +647,7 @@ export default {
         }
 
         .el-table td > .cell {
+            white-space: nowrap;
             word-break: normal;
         }
 
