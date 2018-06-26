@@ -6,6 +6,6 @@
   "version": "0.0.7",
   "main": "electron.js",
   "dependencies": {
-    "mysql": "^2.13.0"
+    "mysql": "^2.15.0"
   }
 }
